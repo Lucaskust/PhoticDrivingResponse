@@ -2,6 +2,7 @@
 Module patients selects patientfiles, loads their EEG data and filters them.
 """
 import re
+import os
 import argparse
 from pathlib import Path
 from collections import defaultdict
@@ -227,6 +228,64 @@ def filter_files(folder: str, time_map: dict[str, list[str]], args: argparse.Nam
         f.rename(trash_folder / f.name)
 
     return sorted(complete)
+
+def sync(folder_power: str, folder_plv: str, folder_incomplete: str) -> None:
+    """
+    Ensures only patients with both power and PLV (stim only) files for the same timepoint remain.
+    Any unmatched files are moved to ./results_incomplete.
+
+    Parameters
+    ----------
+    :folder_power: str
+        Path to the folder containing *_power.pkl files.
+    :folder_plv: str
+        Path to the folder containing *_plv_stim.pkl and *_plv_base.pkl files.
+    :folder_incomplete: str
+        Folder to move incomplete results into.
+    """
+    power_path = Path(folder_power)
+    plv_path = Path(folder_plv)
+    trash = Path(folder_incomplete)
+    trash.mkdir(parents=True, exist_ok=True)
+    
+    def extract_patient_time(fname: str, feat: str):
+        if feat == "power":
+            match = re.match(r"(VEP\d+)_([123])_power", fname)
+        elif feat == "plv":
+            match = re.match(r"(VEP\d+)_([123])_plv_stim", fname)
+        return match.groups() if match else (None, None)
+
+    # Collect patient-time combinations for power
+    power_files = list(power_path.glob("*_power.pkl"))
+    power_map = defaultdict(list)
+    for f in power_files:
+        pid, t = extract_patient_time(f.name, "power")
+        if pid and t:
+            power_map[(pid, t)].append(f)
+
+    # Collect patient-time combinations for PLV
+    plv_files = list(plv_path.glob("*_plv_stim.pkl"))
+    plv_map = defaultdict(list)
+    for f in plv_files:
+        pid, t = extract_patient_time(f.name, "plv")
+        if pid and t:
+            plv_map[(pid, t)].append(f)
+
+    # Find matching sets (patient, time) that exist in BOTH modalities
+    valid_keys = set(power_map.keys()) & set(plv_map.keys())
+
+    # Move any file whose (patient, time) is NOT valid
+    for (pid, t), files in list(power_map.items()):
+        if (pid, t) not in valid_keys:
+            for f in files:
+                dest = trash / f.name
+                shutil.move(str(f), str(dest))
+
+    for (pid, t), files in list(plv_map.items()):
+        if (pid, t) not in valid_keys:
+            for f in files:
+                dest = trash / f.name
+                shutil.move(str(f), str(dest))
 
 def add_patients(args: argparse.Namespace, processed_ids: set[str]) -> list[Path]:
     """

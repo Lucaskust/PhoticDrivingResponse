@@ -1,49 +1,49 @@
 FreqPair,Paired,Metric,Comparison,Test,Statistic,p_value
 10 Hz (S: 10),True,PLV,Non-responder: t0 vs t2,Wilcoxon signed-rank,24.0,0.74609375
-10 Hz (S: 10),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,91.0,0.2615199089050293
-10 Hz (S: 10),False,,Non-responder vs Responder at t0,Mann-Whitney U,144.0,0.17257697574117825
+10 Hz (S: 10),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,106.0,0.5235109329223633
+10 Hz (S: 10),False,,Non-responder vs Responder at t0,Mann-Whitney U,140.0,0.2297093101578952
 10 Hz (S: 10),False,,Non-responder vs Responder at t2,Mann-Whitney U,140.0,0.2297093101578952
 12 Hz (S: 6),True,PLV,Non-responder: t0 vs t2,Wilcoxon signed-rank,24.0,0.75
-12 Hz (S: 6),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,115.0,0.7261838912963867
-12 Hz (S: 6),False,,Non-responder vs Responder at t0,Mann-Whitney U,92.0,0.4761417819666981
-12 Hz (S: 6),False,,Non-responder vs Responder at t2,Mann-Whitney U,144.0,0.17257697574117825
+12 Hz (S: 6),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,125.0,0.9746217727661133
+12 Hz (S: 6),False,,Non-responder vs Responder at t0,Mann-Whitney U,80.0,0.2297093101578952
+12 Hz (S: 6),False,,Non-responder vs Responder at t2,Mann-Whitney U,132.0,0.3813651131746787
 18 Hz (S: 6),True,PLV,Non-responder: t0 vs t2,Wilcoxon signed-rank,27.0,0.9765625
-18 Hz (S: 6),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,95.0,0.32088327407836914
+18 Hz (S: 6),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,99.0,0.3880448341369629
 18 Hz (S: 6),False,,Non-responder vs Responder at t0,Mann-Whitney U,100.0,0.6989061344215826
 18 Hz (S: 6),False,,Non-responder vs Responder at t2,Mann-Whitney U,108.0,0.9513008424058356
 20 Hz (S: 10),True,PLV,Non-responder: t0 vs t2,Wilcoxon signed-rank,18.0,0.361328125
-20 Hz (S: 10),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,101.0,0.42448854446411133
+20 Hz (S: 10),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,119.0,0.8237285614013672
 20 Hz (S: 10),False,,Non-responder vs Responder at t0,Mann-Whitney U,92.0,0.4761417819666981
-20 Hz (S: 10),False,,Non-responder vs Responder at t2,Mann-Whitney U,120.0,0.6989061344215826
+20 Hz (S: 10),False,,Non-responder vs Responder at t2,Mann-Whitney U,128.0,0.4761417819666981
 20 Hz (S: 20),True,PLV,Non-responder: t0 vs t2,Wilcoxon signed-rank,21.0,0.541015625
-20 Hz (S: 20),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,83.0,0.16585874557495117
+20 Hz (S: 20),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,88.0,0.2221074104309082
 20 Hz (S: 20),False,,Non-responder vs Responder at t0,Mann-Whitney U,136.0,0.29915558914941365
 20 Hz (S: 20),False,,Non-responder vs Responder at t2,Mann-Whitney U,136.0,0.29915558914941365
 24 Hz (S: 6),True,PLV,Non-responder: t0 vs t2,Wilcoxon signed-rank,19.0,0.416015625
-24 Hz (S: 6),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,109.0,0.5879268646240234
+24 Hz (S: 6),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,125.0,0.9746217727661133
 24 Hz (S: 6),False,,Non-responder vs Responder at t0,Mann-Whitney U,116.0,0.8228075778114103
-24 Hz (S: 6),False,,Non-responder vs Responder at t2,Mann-Whitney U,124.0,0.5825528762379539
+24 Hz (S: 6),False,,Non-responder vs Responder at t2,Mann-Whitney U,116.0,0.8228075778114103
 30 Hz (S: 10),True,PLV,Non-responder: t0 vs t2,Wilcoxon signed-rank,22.0,0.603515625
-30 Hz (S: 10),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,111.0,0.6327285766601562
+30 Hz (S: 10),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,96.0,0.3369474411010742
 30 Hz (S: 10),False,,Non-responder vs Responder at t0,Mann-Whitney U,140.0,0.2297093101578952
-30 Hz (S: 10),False,,Non-responder vs Responder at t2,Mann-Whitney U,140.0,0.2297093101578952
+30 Hz (S: 10),False,,Non-responder vs Responder at t2,Mann-Whitney U,132.0,0.3813651131746787
 30 Hz (S: 6),True,PLV,Non-responder: t0 vs t2,Wilcoxon signed-rank,4.0,0.013671875
-30 Hz (S: 6),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,120.0,0.8485937118530273
-30 Hz (S: 6),False,,Non-responder vs Responder at t0,Mann-Whitney U,72.0,0.12680274154265933
+30 Hz (S: 6),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,106.0,0.5235109329223633
+30 Hz (S: 6),False,,Non-responder vs Responder at t0,Mann-Whitney U,76.0,0.17257697574117825
 30 Hz (S: 6),False,,Non-responder vs Responder at t2,Mann-Whitney U,160.0,0.0438608167362628
 36 Hz (S: 6),True,PLV,Non-responder: t0 vs t2,Wilcoxon signed-rank,26.0,0.90234375
 36 Hz (S: 6),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,119.0,0.8237285614013672
-36 Hz (S: 6),False,,Non-responder vs Responder at t0,Mann-Whitney U,116.0,0.8228075778114103
-36 Hz (S: 6),False,,Non-responder vs Responder at t2,Mann-Whitney U,112.0,0.9513008424058356
+36 Hz (S: 6),False,,Non-responder vs Responder at t0,Mann-Whitney U,112.0,0.9513008424058356
+36 Hz (S: 6),False,,Non-responder vs Responder at t2,Mann-Whitney U,120.0,0.6989061344215826
 40 Hz (S: 10),True,PLV,Non-responder: t0 vs t2,Wilcoxon signed-rank,12.0,0.123046875
-40 Hz (S: 10),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,93.0,0.2902231216430664
-40 Hz (S: 10),False,,Non-responder vs Responder at t0,Mann-Whitney U,104.0,0.8228075778114103
-40 Hz (S: 10),False,,Non-responder vs Responder at t2,Mann-Whitney U,176.0,0.007656198290356951
+40 Hz (S: 10),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,88.0,0.2221074104309082
+40 Hz (S: 10),False,,Non-responder vs Responder at t0,Mann-Whitney U,108.0,0.9513008424058356
+40 Hz (S: 10),False,,Non-responder vs Responder at t2,Mann-Whitney U,184.0,0.002766200779168155
 40 Hz (S: 20),True,PLV,Non-responder: t0 vs t2,Wilcoxon signed-rank,23.0,0.67578125
-40 Hz (S: 20),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,116.0,0.7502379417419434
-40 Hz (S: 20),False,,Non-responder vs Responder at t0,Mann-Whitney U,172.0,0.012279636349544706
+40 Hz (S: 20),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,100.0,0.4060330390930176
+40 Hz (S: 20),False,,Non-responder vs Responder at t0,Mann-Whitney U,180.0,0.00465874442300885
 40 Hz (S: 20),False,,Non-responder vs Responder at t2,Mann-Whitney U,136.0,0.29915558914941365
 6 Hz (S: 6),True,PLV,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.060546875
-6 Hz (S: 6),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,88.0,0.2221074104309082
-6 Hz (S: 6),False,,Non-responder vs Responder at t0,Mann-Whitney U,120.0,0.6989061344215826
+6 Hz (S: 6),True,PLV,Responder: t0 vs t2,Wilcoxon signed-rank,90.0,0.24789905548095703
+6 Hz (S: 6),False,,Non-responder vs Responder at t0,Mann-Whitney U,124.0,0.5825528762379539
 6 Hz (S: 6),False,,Non-responder vs Responder at t2,Mann-Whitney U,164.0,0.029385151822310843

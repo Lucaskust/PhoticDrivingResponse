@@ -236,7 +236,7 @@ class Classifier:
         cols_plv = ["Patient", "Time", "Group", "FreqPairCSV", "PLV"]
 
         df_plv = df_plv[df_plv["Time"].str.lower() != "base"]
-        df_merged = pd.merge(df_power[cols_power], df_plv[cols_plv], how = "outer",
+        df_merged = pd.merge(df_power[cols_power], df_plv[cols_plv], how = "inner",
                             on = ["Patient", "Time", "Group", "FreqPairCSV"])
         df_merged = df_merged.rename(columns = {"Average_PWR": "Power_Abs",
                                             "Average_SNR": "Power_SNR", 

@@ -1,7 +1,7 @@
 """
 This is the main module that calls all made functions.
 """
-from patients import parse_args, patient_files, eeg, save_pickle_results, filter_files, add_patients, sort_results
+from patients import parse_args, patient_files, eeg, save_pickle_results, filter_files, add_patients, sort_results, sync
 from power import Power
 from phase import Phase
 from analytics import stats_base_power, stats_power, stats_plv
@@ -45,15 +45,15 @@ if __name__ == "__main__":
 
     complete_power = filter_files(FOLDER_POWER, time_map, args, feat="power")
     complete_plv = filter_files(FOLDER_PLV, time_map, args, feat="plv")
-    processed_ids = set(complete_power) & set(complete_plv)
+    sync(FOLDER_POWER, FOLDER_PLV, "results_incomplete")
 
     if skipped:
         print(f"All files processed. Skipped files: {skipped}")
     else:
         print("All files processed. No skipped files.")
-    print(f"Complete  files for {processed_ids}")
+    print(f"Complete  files for {set(complete_power) & set(complete_plv)}")
 
-    # # Statistics
+    # Statistics
     responder_ids = {"2", "10", "11", "17", "21", "22", "32", "40", "46", "48", "51", "57", "63"}
     stats_base_power(FOLDER_POWER, paired=True, save=True) # Power baseline
     df_power = stats_power(responder_ids, FOLDER_POWER, paired=True, save=True, plot=False)
@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
     # Extra files
     N = 0
-    recovered_files = add_patients(args, processed_ids)
+    recovered_files = add_patients(args, set(complete_power) & set(complete_plv))
     for pt_file in recovered_files:
         N += 1
         print(f"--- Processing file {N}/{len(recovered_files)}.")
@@ -79,6 +79,7 @@ if __name__ == "__main__":
     sort_results("results_incomplete", "results_incomplete/power", "results_incomplete/plv")
     df_power_incomplete = stats_power(responder_ids, "results_incomplete/power", paired=True, save=False, plot=False)
     df_plv_incomplete = stats_plv(responder_ids, "results_incomplete/plv", paired=True, save=False, plot=False)
+    sync("results_incomplete/power", "results_incomplete/plv", "results_incomplete")
 
     # Classification
     pipeline = Classifier(df_power=df_power, df_plv=df_plv)

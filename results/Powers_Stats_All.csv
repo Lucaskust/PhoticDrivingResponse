@@ -1,145 +1,145 @@
 FreqPair,Paired,Metric,Comparison,Test,Statistic,p_value
-10 Hz (S: 10),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,30.0,0.8310546875
-10 Hz (S: 10),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,8.0,0.6875
-10 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,30.0,0.807530704589528
-10 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,27.0,0.5908209437621202
+10 Hz (S: 10),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,25.0,0.51953125
+10 Hz (S: 10),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,6.0,0.8125
+10 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,22.0,0.5833333333333334
+10 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,16.0,0.22115384615384617
 10 Hz (S: 10),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,29.0,0.7646484375
-10 Hz (S: 10),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,10.0,1.0
-10 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,40.0,0.5248868778280543
-10 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,47.0,0.1801874595992243
-10 Hz (S: 10),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,27.0,0.6376953125
-10 Hz (S: 10),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,5.0,0.3125
-10 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,28.0,0.6604718810601163
-10 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,7.0,0.007110536522301229
-12 Hz (S: 6),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,22.0,0.365234375
-12 Hz (S: 6),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.84375
-12 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,28.0,0.6604718810601163
-12 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,32.0,0.9612152553329023
-12 Hz (S: 6),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,28.0,0.7001953125
-12 Hz (S: 6),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,6.0,0.4375
-12 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,37.0,0.732546864899806
-12 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,33.0,1.0
-12 Hz (S: 6),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,19.0,0.240234375
-12 Hz (S: 6),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,10.0,1.0
-12 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,27.0,0.5908209437621202
-12 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,34.0,0.9612152553329023
-18 Hz (S: 6),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,15.0,0.123046875
-18 Hz (S: 6),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.84375
-18 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,34.0,0.9612152553329023
-18 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,41.0,0.46234647705235943
-18 Hz (S: 6),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,19.0,0.240234375
-18 Hz (S: 6),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,3.0,0.15625
-18 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,46.0,0.2160633484162896
-18 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,49.0,0.12152553329023917
-18 Hz (S: 6),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,20.0,0.2783203125
-18 Hz (S: 6),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,10.0,1.0
-18 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,22.0,0.3010665804783452
-18 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,25.0,0.46234647705235943
-20 Hz (S: 10),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,26.0,0.5771484375
-20 Hz (S: 10),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,8.0,0.6875
-20 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,29.0,0.732546864899806
-20 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,31.0,0.883645765998707
-20 Hz (S: 10),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,18.0,0.2060546875
-20 Hz (S: 10),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.84375
-20 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,39.0,0.5908209437621202
-20 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,50.0,0.0982546864899806
-20 Hz (S: 10),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,30.0,0.8310546875
-20 Hz (S: 10),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,0.5625
-20 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,25.0,0.46234647705235943
-20 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,20.0,0.2160633484162896
-20 Hz (S: 20),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,21.0,0.3203125
-20 Hz (S: 20),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,8.0,0.6875
-20 Hz (S: 20),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,27.0,0.5908209437621202
-20 Hz (S: 20),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,35.0,0.883645765998707
-20 Hz (S: 20),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,18.0,0.2060546875
-20 Hz (S: 20),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.84375
-20 Hz (S: 20),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,39.0,0.5908209437621202
-20 Hz (S: 20),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,50.0,0.0982546864899806
-20 Hz (S: 20),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,23.0,0.4130859375
-20 Hz (S: 20),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.84375
-20 Hz (S: 20),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,25.0,0.46234647705235943
-20 Hz (S: 20),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,24.0,0.4043309631544926
-24 Hz (S: 6),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,18.0,0.2060546875
-24 Hz (S: 6),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,10.0,1.0
-24 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,36.0,0.807530704589528
-24 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,41.0,0.46234647705235943
-24 Hz (S: 6),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,16.0,0.1474609375
-24 Hz (S: 6),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.84375
-24 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,39.0,0.5908209437621202
-24 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,48.0,0.14899806076276664
+10 Hz (S: 10),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+10 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,31.0,0.7426739926739928
+10 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,36.0,0.37728937728937734
+10 Hz (S: 10),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,26.0,0.5771484375
+10 Hz (S: 10),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,3.0,0.3125
+10 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,22.0,0.5833333333333334
+10 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,4.0,0.005494505494505494
+12 Hz (S: 6),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,21.0,0.3203125
+12 Hz (S: 6),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,5.0,0.625
+12 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,19.0,0.37728937728937734
+12 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,21.0,0.5096153846153847
+12 Hz (S: 6),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,30.0,0.8310546875
+12 Hz (S: 6),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,4.0,0.4375
+12 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,27.0,1.0
+12 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,22.0,0.5833333333333334
+12 Hz (S: 6),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,22.0,0.365234375
+12 Hz (S: 6),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+12 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,20.0,0.440934065934066
+12 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,29.0,0.9130036630036632
+18 Hz (S: 6),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,16.0,0.1474609375
+18 Hz (S: 6),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,6.0,0.8125
+18 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,26.0,0.9130036630036632
+18 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,31.0,0.7426739926739928
+18 Hz (S: 6),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,20.0,0.2783203125
+18 Hz (S: 6),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,2.0,0.1875
+18 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,40.0,0.18040293040293043
+18 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,37.0,0.3195970695970696
+18 Hz (S: 6),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,24.0,0.46484375
+18 Hz (S: 6),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,5.0,0.625
+18 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,14.0,0.14514652014652016
+18 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,19.0,0.37728937728937734
+20 Hz (S: 10),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,23.0,0.4130859375
+20 Hz (S: 10),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+20 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,23.0,0.6611721611721613
+20 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,20.0,0.440934065934066
+20 Hz (S: 10),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,23.0,0.4130859375
+20 Hz (S: 10),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+20 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,31.0,0.7426739926739928
+20 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,38.0,0.26739926739926745
+20 Hz (S: 10),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,28.0,0.7001953125
+20 Hz (S: 10),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+20 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,19.0,0.37728937728937734
+20 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,13.0,0.11492673992673993
+20 Hz (S: 20),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,18.0,0.2060546875
+20 Hz (S: 20),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+20 Hz (S: 20),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,20.0,0.440934065934066
+20 Hz (S: 20),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,25.0,0.8269230769230771
+20 Hz (S: 20),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,23.0,0.4130859375
+20 Hz (S: 20),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+20 Hz (S: 20),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,31.0,0.7426739926739928
+20 Hz (S: 20),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,38.0,0.26739926739926745
+20 Hz (S: 20),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,21.0,0.3203125
+20 Hz (S: 20),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+20 Hz (S: 20),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,19.0,0.37728937728937734
+20 Hz (S: 20),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,17.0,0.26739926739926745
+24 Hz (S: 6),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,23.0,0.4130859375
+24 Hz (S: 6),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+24 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,31.0,0.7426739926739928
+24 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,35.0,0.440934065934066
+24 Hz (S: 6),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,21.0,0.3203125
+24 Hz (S: 6),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,6.0,0.8125
+24 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,33.0,0.5833333333333334
+24 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,38.0,0.26739926739926745
 24 Hz (S: 6),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,25.0,0.51953125
-24 Hz (S: 6),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.84375
-24 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,35.0,0.883645765998707
-24 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,29.0,0.732546864899806
-30 Hz (S: 10),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,14.0,0.1015625
-30 Hz (S: 10),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,10.0,1.0
-30 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,36.0,0.807530704589528
-30 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,46.0,0.2160633484162896
-30 Hz (S: 10),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,16.0,0.1474609375
-30 Hz (S: 10),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,8.0,0.6875
-30 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,43.0,0.3501939237233355
-30 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,53.0,0.04767291531997415
-30 Hz (S: 10),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,31.0,0.8984375
-30 Hz (S: 10),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,10.0,1.0
-30 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,28.0,0.6604718810601163
-30 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,21.0,0.2561409179056238
-30 Hz (S: 6),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,18.0,0.2060546875
-30 Hz (S: 6),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,8.0,0.6875
-30 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,38.0,0.6604718810601163
-30 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,42.0,0.4043309631544926
-30 Hz (S: 6),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,16.0,0.1474609375
-30 Hz (S: 6),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,8.0,0.6875
-30 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,43.0,0.3501939237233355
-30 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,53.0,0.04767291531997415
+24 Hz (S: 6),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,6.0,0.8125
+24 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,27.0,1.0
+24 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,28.0,1.0
+30 Hz (S: 10),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,24.0,0.46484375
+30 Hz (S: 10),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+30 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,31.0,0.7426739926739928
+30 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,39.0,0.22115384615384617
+30 Hz (S: 10),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,22.0,0.365234375
+30 Hz (S: 10),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,6.0,0.8125
+30 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,36.0,0.37728937728937734
+30 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,43.0,0.08974358974358976
+30 Hz (S: 10),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,32.0,0.9658203125
+30 Hz (S: 10),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+30 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,22.0,0.5833333333333334
+30 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,19.0,0.37728937728937734
+30 Hz (S: 6),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,28.0,0.7001953125
+30 Hz (S: 6),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,6.0,0.8125
+30 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,33.0,0.5833333333333334
+30 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,33.0,0.5833333333333334
+30 Hz (S: 6),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,22.0,0.365234375
+30 Hz (S: 6),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,6.0,0.8125
+30 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,36.0,0.37728937728937734
+30 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,43.0,0.08974358974358976
 30 Hz (S: 6),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,22.0,0.365234375
-30 Hz (S: 6),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,5.0,0.3125
-30 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,36.0,0.807530704589528
-30 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,19.0,0.1801874595992243
-36 Hz (S: 6),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,21.0,0.3203125
-36 Hz (S: 6),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.84375
-36 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,38.0,0.6604718810601163
-36 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,58.0,0.010342598577892697
-36 Hz (S: 6),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,17.0,0.1748046875
-36 Hz (S: 6),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,8.0,0.6875
-36 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,46.0,0.2160633484162896
-36 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,56.0,0.020200387847446672
-36 Hz (S: 6),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,29.0,0.7646484375
-36 Hz (S: 6),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.84375
-36 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,33.0,1.0
-36 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,28.0,0.6604718810601163
-40 Hz (S: 10),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,26.0,0.5771484375
-40 Hz (S: 10),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,10.0,1.0
-40 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,38.0,0.6604718810601163
-40 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,48.0,0.14899806076276664
-40 Hz (S: 10),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,18.0,0.2060546875
-40 Hz (S: 10),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.84375
-40 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,48.0,0.14899806076276664
-40 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,57.0,0.014544279250161603
+30 Hz (S: 6),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,4.0,0.4375
+30 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,27.0,1.0
+30 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,15.0,0.18040293040293043
+36 Hz (S: 6),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,28.0,0.7001953125
+36 Hz (S: 6),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+36 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,33.0,0.5833333333333334
+36 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,46.0,0.03800366300366301
+36 Hz (S: 6),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,27.0,0.6376953125
+36 Hz (S: 6),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,6.0,0.8125
+36 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,38.0,0.26739926739926745
+36 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,44.0,0.06868131868131869
+36 Hz (S: 6),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,28.0,0.7001953125
+36 Hz (S: 6),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+36 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,26.0,0.9130036630036632
+36 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,25.0,0.8269230769230771
+40 Hz (S: 10),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,32.0,0.9658203125
+40 Hz (S: 10),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+40 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,35.0,0.440934065934066
+40 Hz (S: 10),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,45.0,0.05173992673992674
+40 Hz (S: 10),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,29.0,0.7646484375
+40 Hz (S: 10),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,6.0,0.8125
+40 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,39.0,0.22115384615384617
+40 Hz (S: 10),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,45.0,0.05173992673992674
 40 Hz (S: 10),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,20.0,0.2783203125
-40 Hz (S: 10),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.84375
-40 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,26.0,0.5248868778280543
-40 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,21.0,0.2561409179056238
-40 Hz (S: 20),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,23.0,0.4130859375
-40 Hz (S: 20),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.84375
-40 Hz (S: 20),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,26.0,0.5248868778280543
-40 Hz (S: 20),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,34.0,0.9612152553329023
-40 Hz (S: 20),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,18.0,0.2060546875
-40 Hz (S: 20),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,9.0,0.84375
-40 Hz (S: 20),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,48.0,0.14899806076276664
-40 Hz (S: 20),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,57.0,0.014544279250161603
-40 Hz (S: 20),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,25.0,0.51953125
-40 Hz (S: 20),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,8.0,0.6875
-40 Hz (S: 20),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,16.0,0.0982546864899806
-40 Hz (S: 20),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,25.0,0.46234647705235943
-6 Hz (S: 6),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,32.0,0.9658203125
-6 Hz (S: 6),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,10.0,1.0
-6 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,37.0,0.732546864899806
-6 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,38.0,0.6604718810601163
-6 Hz (S: 6),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,31.0,0.8984375
-6 Hz (S: 6),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,10.0,1.0
-6 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,35.0,0.883645765998707
-6 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,37.0,0.732546864899806
-6 Hz (S: 6),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,30.0,0.8310546875
-6 Hz (S: 6),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,0.5625
-6 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,33.0,1.0
-6 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,29.0,0.732546864899806
+40 Hz (S: 10),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+40 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,27.0,1.0
+40 Hz (S: 10),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,20.0,0.440934065934066
+40 Hz (S: 20),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,26.0,0.5771484375
+40 Hz (S: 20),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,6.0,0.8125
+40 Hz (S: 20),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,26.0,0.9130036630036632
+40 Hz (S: 20),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,32.0,0.6611721611721613
+40 Hz (S: 20),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,29.0,0.7646484375
+40 Hz (S: 20),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,6.0,0.8125
+40 Hz (S: 20),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,39.0,0.22115384615384617
+40 Hz (S: 20),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,45.0,0.05173992673992674
+40 Hz (S: 20),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,30.0,0.8310546875
+40 Hz (S: 20),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+40 Hz (S: 20),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,16.0,0.22115384615384617
+40 Hz (S: 20),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,25.0,0.8269230769230771
+6 Hz (S: 6),True,Average_PWR,Responder: t0 vs t2,Wilcoxon signed-rank,28.0,0.7001953125
+6 Hz (S: 6),True,Average_PWR,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+6 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t0,Mann-Whitney U,25.0,0.8269230769230771
+6 Hz (S: 6),False,Average_PWR,Responder vs Non-responder at t2,Mann-Whitney U,27.0,1.0
+6 Hz (S: 6),True,Average_BASE,Responder: t0 vs t2,Wilcoxon signed-rank,30.0,0.8310546875
+6 Hz (S: 6),True,Average_BASE,Non-responder: t0 vs t2,Wilcoxon signed-rank,7.0,1.0
+6 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t0,Mann-Whitney U,24.0,0.7426739926739928
+6 Hz (S: 6),False,Average_BASE,Responder vs Non-responder at t2,Mann-Whitney U,27.0,1.0
+6 Hz (S: 6),True,Average_SNR,Responder: t0 vs t2,Wilcoxon signed-rank,26.0,0.5771484375
+6 Hz (S: 6),True,Average_SNR,Non-responder: t0 vs t2,Wilcoxon signed-rank,6.0,0.8125
+6 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t0,Mann-Whitney U,29.0,0.9130036630036632
+6 Hz (S: 6),False,Average_SNR,Responder vs Non-responder at t2,Mann-Whitney U,21.0,0.5096153846153847

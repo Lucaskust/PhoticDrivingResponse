@@ -21,40 +21,40 @@ from mne.io.base import BaseRaw
 from patients import parse_args, patient_files, eeg, filter_files
 from power import Power
 from phase import Phase
-#from analytics import stats_base
+from analytics import stats_base_power, stats_power, stats_plv
 
-parser = argparse.ArgumentParser()
-trial_map = {
-    "t0": "T0_T1_T2",
-    "t1": "T0_T1",
-    "t2": "T0_T2"}
-parser.add_argument("-tr", "--trial", choices = trial_map.keys(), default="t2",
-help = "Choose trial map: t0, t1 or t2")
+# parser = argparse.ArgumentParser()
+# trial_map = {
+#     "t0": "T0_T1_T2",
+#     "t1": "T0_T1",
+#     "t2": "T0_T2"}
+# parser.add_argument("-tr", "--trial", choices = trial_map.keys(), default="t2",
+# help = "Choose trial map: t0, t1 or t2")
 
-time_map = {
-    "t0": ["t0", "t1", "t2"],
-    "t1": ["t0", "t1"],
-    "t2": ["t0", "t2"]
-}
-parser.add_argument("-t", "--time", choices = time_map.keys(), default="t0",
-                    help = "Choose point in time: t0, t1 or t2")
+# time_map = {
+#     "t0": ["t0", "t1", "t2"],
+#     "t1": ["t0", "t1"],
+#     "t2": ["t0", "t2"]
+# }
+# parser.add_argument("-t", "--time", choices = time_map.keys(), default="t0",
+#                     help = "Choose point in time: t0, t1 or t2")
 
-while True:
-    args = parser.parse_args()
-    if args.time not in time_map[args.trial]:
-        print(f"Error: timepoint {args.time} is not in trial {args.trial}")
-        print("Please choose again.")
-    break
+# while True:
+#     args = parser.parse_args()
+#     if args.time not in time_map[args.trial]:
+#         print(f"Error: timepoint {args.time} is not in trial {args.trial}")
+#         print("Please choose again.")
+#     break
 
-data_map = {
-    "t0": "1",
-    "t1": "2",
-    "t2": "3"
-}
+# data_map = {
+#     "t0": "1",
+#     "t1": "2",
+#     "t2": "3"
+# }
 
-pt = "VEP56_" + data_map[args.time] + ".cnt"
-src = Path('/Volumes/Docs/Bruikbare Data') / trial_map[args.trial] / args.time / pt
-passband = [0.5, 100]
+# pt = "VEP38_" + data_map[args.time] + ".cnt"
+# src = Path('/Volumes/Docs/Bruikbare Data') / trial_map[args.trial] / args.time / pt
+# passband = [0.5, 100]
 
 # # Comparing EEG without max filter
 # eeg = eeg(src, passband, notch = 50, plot=True)
@@ -66,24 +66,29 @@ passband = [0.5, 100]
 # raw.plot(scalings = "auto", title="Non-Filtered EEG data", show=True, block=False)
 
 # Testing power functions
-# eeg = eeg(src, passband, notch = 50, occi=True, plot=False)
+# eeg = eeg(src, passband, notch = 50, occi=False, plot=False)
 # df = Power._stimulation_power(eeg, save=False)
-# epochs, df_epochs = Power._epoch_power(df, eeg, save=True, plot=False)
+# epochs, df_epochs = Power._epoch_power(df, eeg, save=False, plot=False)
 # fft_powers, fft_freqs = Power._fft_power(epochs, df_epochs, trim=0.0, padding= "zeros", upper_lim = 40, plot=True)
-# powers = Power._snr(epochs, fft_powers, fft_freqs, save=True, plot=True, harms=4, upper_lim=40, montage="standard_1020")
+# powers = Power._snr(epochs, fft_powers, fft_freqs, save=False, plot=True, harms=4, upper_lim=40, montage="standard_1020")
 
 # Testing phase functions
-# raw = eeg(src, passband, notch = 50, plot=False)
+# raw = eeg(src, passband, notch = 50, occi = True, plot=False)
 # df = Phase._stimulation_phase(raw, save=False, base=False)
 # epochs =  Phase._epoch_phase(df, raw)
-# phases = Phase._fft_phase(epochs, occi=True, plot = False, save=True)
+# phases = Phase._fft_phase(epochs, plot = True, save=False)
 
 # Baseline phase functions
-raw = eeg(src, passband, notch = 50, occi=True, plot=False)
-df, df_base = Phase._stimulation_phase(raw, save=True, base=True)
-epochs_baseline =  Phase._epoch_phase(df_base, raw)
-phases_baseline = Phase._fft_phase(epochs_baseline, plot=True, save=True)
+# raw = eeg(src, passband, notch = 50, occi=True, plot=False)
+# df, df_base = Phase._stimulation_phase(raw, save=True, base=True)
+# epochs_baseline =  Phase._epoch_phase(df_base, raw)
+# phases_baseline = Phase._fft_phase(epochs_baseline, plot=True, save=True)
 
+responder_ids = {"2", "10", "11", "17", "21", "22", "32", "40", "46", "48", "51", "57", "63"}
+FOLDER_POWER = "results_POWER"
+FOLDER_PLV = "results_PLV"
+stats_power(responder_ids, FOLDER_POWER, paired=True, save=False, plot=True)
+#stats_plv(responder_ids, FOLDER_PLV, paired=True, save=False, plot=True)
 
 ## Filtering files function
 

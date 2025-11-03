@@ -359,7 +359,7 @@ def stats_plv(responder_id: list, folder_plv: str, paired: bool = True, save: bo
     df = pd.concat(df_patient, ignore_index=True)
 
     # Statistics
-    if save: 
+    if save:
         results = []
         timepoints = [tp for tp in sorted(df["Time"].unique()) if tp != "base"]
         freq_pairs = sorted(df["FreqPairCSV"].unique())

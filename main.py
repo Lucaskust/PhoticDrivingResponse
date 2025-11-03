@@ -18,30 +18,30 @@ if __name__ == "__main__":
     FOLDER_POWER = "results_POWER"
     FOLDER_PLV = "results_PLV"
 
-    for pt_file in pt_files:
-        N += 1
-        print(f"--- Processing file {N}/{len(pt_files)}.")
+    # for pt_file in pt_files:
+    #     N += 1
+    #     print(f"--- Processing file {N}/{len(pt_files)}.")
 
-        # Power calculation
-        try:
-            raw = eeg(pt_file, PASSBAND, occi=True, plot=False)
-            power = Power(PASSBAND, raw).run()
-            save_pickle_results(power, pt_file, FOLDER_POWER, feat="power")
+    #     # Power calculation
+    #     try:
+    #         raw = eeg(pt_file, PASSBAND, occi=True, plot=False)
+    #         power = Power(PASSBAND, raw).run()
+    #         save_pickle_results(power, pt_file, FOLDER_POWER, feat="power")
 
-        except Exception as e: # pylint: disable=broad-except
-            print(f"Skipping power calculation of {pt_file.name} due to error: {e}")
-            skipped.append((pt_file.name, "Power", str(e)))
-            continue
+    #     except Exception as e: # pylint: disable=broad-except
+    #         print(f"Skipping power calculation of {pt_file.name} due to error: {e}")
+    #         skipped.append((pt_file.name, "Power", str(e)))
+    #         continue
 
-        # PLV calculation
-        try:
-            plv_stim, plv_base = Phase(PASSBAND, raw).run()
-            save_pickle_results({"stim": plv_stim, "base": plv_base}, pt_file, FOLDER_PLV, feat="plv")
+    #     # PLV calculation
+    #     try:
+    #         plv_stim, plv_base = Phase(PASSBAND, raw).run()
+    #         save_pickle_results({"stim": plv_stim, "base": plv_base}, pt_file, FOLDER_PLV, feat="plv")
 
-        except Exception as e: # pylint: disable=broad-except
-            print(f"Skipping phase calculation of {pt_file.name} due to Phase error: {e}")
-            skipped.append((pt_file.name, "PLV", str(e)))
-            continue
+    #     except Exception as e: # pylint: disable=broad-except
+    #         print(f"Skipping phase calculation of {pt_file.name} due to Phase error: {e}")
+    #         skipped.append((pt_file.name, "PLV", str(e)))
+    #         continue
 
     complete_power = filter_files(FOLDER_POWER, time_map, args, feat="power")
     complete_plv = filter_files(FOLDER_PLV, time_map, args, feat="plv")

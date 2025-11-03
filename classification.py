@@ -150,7 +150,12 @@ class Classifier:
             x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20, stratify=y)
             x_train_sel, x_test_sel = self._apply_transformations_from_record(best_transform_record, x_train, x_test)
 
+            print(f"\nFinal model for task '{task_id}': ")
             self.task_models[task_id] = self._classifier_final(x_train_sel, x_test_sel, y_train, y_test,best_model_name)
+            selected_features = self.task_transforms[task_id].get("rfe_feature_names", [])
+            print("Selected features:")
+            for feat in selected_features:
+                print(f"  {feat}")
 
     def classify_new_data(self, df_power_new: pd.DataFrame, df_plv_new: pd.DataFrame, task: str = "A")-> None:
         """
@@ -366,9 +371,7 @@ class Classifier:
         x_train_sel = rfecv.fit_transform(x_train_corr, y_train)
         x_test_sel = rfecv.transform(x_test_corr)
         rfe_features = rfecv.get_support(indices=True)
-        rfe_feature_names = x_train.columns[rfe_features]
-        print("Optimal number of features:", rfecv.n_features_)
-        print(f"Features: {rfe_feature_names.tolist()}")
+        rfe_feature_names = x_train_corr.columns[rfecv.get_support()]
 
         t_record = dict(
             scalers=scalers,
@@ -377,6 +380,7 @@ class Classifier:
             imputer=imputer,
             rfecv=rfecv,
             rfe_features=rfe_features,
+            rfe_feature_names=list(rfe_feature_names),
             final_columns_after_var_corr=x_train_corr.columns)
 
         return x_train_sel, x_test_sel, y_train, y_test, t_record

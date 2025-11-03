@@ -2,7 +2,6 @@
 Module patients selects patientfiles, loads their EEG data and filters them.
 """
 import re
-import os
 import argparse
 from pathlib import Path
 from collections import defaultdict
@@ -247,7 +246,7 @@ def sync(folder_power: str, folder_plv: str, folder_incomplete: str) -> None:
     plv_path = Path(folder_plv)
     trash = Path(folder_incomplete)
     trash.mkdir(parents=True, exist_ok=True)
-    
+
     def extract_patient_time(fname: str, feat: str):
         if feat == "power":
             match = re.match(r"(VEP\d+)_([123])_power", fname)

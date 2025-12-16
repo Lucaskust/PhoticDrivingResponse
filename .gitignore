@@ -10,6 +10,8 @@ __pycache__/
 results_POWER/
 results_PLV/
 results_incomplete/
+LK_derived/
+LK_figures/
 derived/
 figures/
 *.pkl
@@ -17,3 +19,17 @@ figures/
 # OS / editor
 .vscode/
 .DS_Store
+
+# Data files (voorkom per ongeluk committen)
+*.cnt
+*.edf
+*.bdf
+*.set
+*.fif
+*.mat
+*.csv
+*.tsv
+
+# Notebooks en logs
+.ipynb_checkpoints/
+*.log

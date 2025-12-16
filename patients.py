@@ -4,6 +4,13 @@ Module patients selects patientfiles, loads their EEG data and filters them.
 import re
 import argparse
 from pathlib import Path
+DATA_ROOT = Path(r"D:/")
+
+TIME_TO_FOLDER = {
+    "t0": "cenobamate_eeg_1",
+    "t1": "cenobamate_eeg_2",
+    "t2": "cenobamate_eeg_3",
+}
 from collections import defaultdict
 import shutil
 import numpy as np
@@ -54,31 +61,42 @@ def parse_args()-> tuple[dict[str, str], argparse.Namespace]:
 
     return trial_map, time_map, args
 
+from pathlib import Path
+
 def patient_files(trial_map: dict[str, str], args: argparse.Namespace) -> list[Path]:
     """
     Returns a list of patient files for a given trial/time combo.
+    Aangepast voor jouw Windows USB-structuur:
 
-    Parameters
-    ----------
-    :trial_map: dict
-        Dictionary mapping trial arguments to folder names.
-    :args: argparse
-        Parsed command-line arguments, must contain `trial` and `time`.
-
-    Returns
-    -------
-    :list: list
-        List containing all EEG files in format .cnt within the folder. 
+        D:/cenobamate_eeg_1  -> t0
+        D:/cenobamate_eeg_2  -> t1
+        D:/cenobamate_eeg_3  -> t2
     """
-    data_folder = Path("/Volumes/Docs/Bruikbare Data") / trial_map[args.trial]
     timepoints = args.time if isinstance(args.time, list) else [args.time]
 
-    files = []
-    for tp in timepoints:
-        folder = data_folder / tp
-        files.extend(folder.glob("*.cnt"))  # collect all .cnt files
+    files: list[Path] = []
 
+    for tp in timepoints:
+        folder_name = TIME_TO_FOLDER.get(tp)
+        if folder_name is None:
+            continue
+
+        folder = DATA_ROOT / folder_name
+        print(f"Zoek in map: {folder}")  # debug
+
+        if not folder.exists():
+            print(f"  LET OP: map bestaat niet.")
+            continue
+
+        # Pak gewoon alle .cnt-bestanden (ongeacht precieze naam)
+        new_files = sorted(folder.glob("*.cnt"))
+        print(f"  Gevonden .cnt-bestanden: {len(new_files)}")
+
+        files.extend(new_files)
+
+    print(f"Totaal aantal .cnt-bestanden dat verwerkt gaat worden: {len(files)}")
     return files
+
 
 def eeg(src, passband, notch = 50, occi: bool = False, plot: bool = False)-> BaseRaw:
     """
@@ -223,8 +241,15 @@ def filter_files(folder: str, time_map: dict[str, list[str]], args: argparse.Nam
 
     trash_folder = Path("./results_incomplete")
     trash_folder.mkdir(parents=True, exist_ok=True)
+
     for f in to_remove:
-        f.rename(trash_folder / f.name)
+        dest = trash_folder / f.name
+        if dest.exists():
+            # resultaat staat al in results_incomplete -> verwijder de dubbel in de bronmap
+            f.unlink()
+        else:
+            f.rename(dest)
+
 
     return sorted(complete)
 
@@ -303,7 +328,7 @@ def add_patients(args: argparse.Namespace, processed_ids: set[str]) -> list[Path
         Patient files that will be used as unseen test data.
     """
     recovered_files = []
-    base_data_path = Path("/Volumes/Docs/Bruikbare Data")
+    base_data_path = Path("D:/")  # <-- USB-stick, evt. aanpassen als jouw letter anders is
     folders_to_check = []
 
     if args.trial == "t0":

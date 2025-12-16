@@ -1,0 +1,19 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Result folders / data outputs
+results_POWER/
+results_PLV/
+results_incomplete/
+derived/
+figures/
+*.pkl
+
+# OS / editor
+.vscode/
+.DS_Store

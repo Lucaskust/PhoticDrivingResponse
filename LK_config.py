@@ -21,7 +21,7 @@ RESPONDER_IDS = {"2", "10", "11", "17", "21", "22", "32", "40", "46", "48", "51"
 
 # Instellingen die vaak werken (wordt in code “veilig” gefilterd op wat de class accepteert)
 SPEC_SETTINGS = dict(
-    peak_width_limits=(1, 12),
+    peak_width_limits=(2,12),
     max_n_peaks=6,
     min_peak_height=0.1,
     peak_threshold=2.0,

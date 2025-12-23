@@ -30,6 +30,15 @@ figures/
 *.csv
 *.tsv
 
+# generated results
+results_POWER/
+results_PLV/
+results_incomplete/
+quicklook/
+specparam_out/
+specparam_out_blocks/
+
+
 # Notebooks en logs
 .ipynb_checkpoints/
 *.log

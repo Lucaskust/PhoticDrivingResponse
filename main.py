@@ -43,8 +43,8 @@ if __name__ == "__main__":
             skipped.append((pt_file.name, "PLV", str(e)))
             continue
         # Na het verwerken van alle .cnt-bestanden:
-    complete_power = filter_files(FOLDER_POWER, time_map, args, feat="power")
-    complete_plv   = filter_files(FOLDER_PLV, time_map, args, feat="plv")
+    # complete_power = filter_files(FOLDER_POWER, time_map, args, feat="power")
+    # complete_plv   = filter_files(FOLDER_PLV, time_map, args, feat="plv")
     sync(FOLDER_POWER, FOLDER_PLV, "results_incomplete")
 
     if skipped:

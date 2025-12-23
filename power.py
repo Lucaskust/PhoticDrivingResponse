@@ -31,8 +31,9 @@ class Power:
         self.eeg = self.raw.copy()
         df_stim = self._stimulation_power(self.eeg, save=False)
         epochs, df_epochs = self._epoch_power(df_stim, self.eeg, save=False, plot=False)
-        fft_powers, fft_freq= self._fft_power(epochs, df_epochs, trim=0.0, padding = "zeros", plot=False)
-        powers = self._snr(epochs, fft_powers, fft_freq, harms=5, upper_lim=40, save=False, plot=False)
+        fft_powers_db, fft_powers_lin, fft_freq = self._fft_power(epochs, df_epochs, trim=0.0, padding="zeros", plot=False)
+        powers = self._snr(epochs, fft_powers_db, fft_freq, harms=5, upper_lim=40, save=False, plot=False)
+
 
         return powers
 
@@ -202,6 +203,8 @@ class Power:
 
         # FFT preparation (Hanning window & Welch)
         fft_powers = {rep: {f: {ch: [] for ch in ch_names} for f in freqs} for rep in range(0, reps + 1)}
+        fft_powers_lin = {rep: {f: {ch: [] for ch in ch_names} for f in freqs} for rep in range(0, reps + 1)}
+
         overlap = 0.5
         window_length = int(sfreq)
         step = int(window_length * overlap)
@@ -244,21 +247,30 @@ class Power:
                     segments_powers.append(power[mask])
 
                 # Convert to dB
-                fft_powers[rep][freq][ch_name] = (10*np.log10(np.mean(segments_powers, axis=0) * 1e12))
+                # Mean linear power (µV^2 / "bin")  - FOOOF/specparam uses linear
+                mean_lin = np.mean(segments_powers, axis=0) * 1e12
+                mean_lin = np.maximum(mean_lin, 1e-30)  # avoid log(0)
 
-        # Average across reps
+                fft_powers_lin[rep][freq][ch_name] = mean_lin
+                fft_powers[rep][freq][ch_name] = 10 * np.log10(mean_lin)
+
+
+        # Average across reps (both dB and linear)
         for freq in freqs:
             for ch_name in ch_names:
-                fft_power_values = []
+                vals_db = []
+                vals_lin = []
                 for r in fft_powers:
-                    if r ==0:
+                    if r == 0:
                         continue
                     if freq in fft_powers[r] and isinstance(fft_powers[r][freq][ch_name], np.ndarray):
-                        fft_power_values.append(fft_powers[r][freq][ch_name])
-                    if len(fft_power_values) > 0:
-                        fft_powers[0][freq][ch_name] = np.mean(fft_power_values, axis=0)
-                    else:
-                        fft_powers[0][freq][ch_name] = np.full_like(fft_freq, np.nan)
+                        vals_db.append(fft_powers[r][freq][ch_name])
+                    if freq in fft_powers_lin[r] and isinstance(fft_powers_lin[r][freq][ch_name], np.ndarray):
+                        vals_lin.append(fft_powers_lin[r][freq][ch_name])
+
+                fft_powers[0][freq][ch_name] = np.mean(vals_db, axis=0) if len(vals_db) else np.full_like(fft_freq, np.nan)
+                fft_powers_lin[0][freq][ch_name] = np.mean(vals_lin, axis=0) if len(vals_lin) else np.full_like(fft_freq, np.nan)
+
 
         # Option to plot different PSD's averaged over all channels
         if plot:
@@ -286,7 +298,7 @@ class Power:
                         ax.axvline(harmonic, color='gray', linestyle='dotted', linewidth=1)
             plt.tight_layout()
             plt.show()
-        return fft_powers, fft_freq
+        return fft_powers, fft_powers_lin, fft_freq
 
     @staticmethod
     def _snr(epochs: mne.Epochs, fft_powers: dict, fft_freq: dict, save: bool = False, plot: bool = False,

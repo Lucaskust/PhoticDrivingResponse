@@ -65,6 +65,15 @@ def compute_psd_for_segment(raw, t_start, t_end, fmin, fmax, occ_picks):
     mean_lin = np.maximum(mean_lin, 1e-30)
     return freqs, mean_lin
 
+def bin_power_at(freqs, psd_lin, target_hz):
+    """Return (closest_freq, log10(power)) at nearest frequency bin."""
+    freqs = np.asarray(freqs, dtype=float)
+    psd_lin = np.asarray(psd_lin, dtype=float)
+    idx = int(np.argmin(np.abs(freqs - float(target_hz))))
+    cf = float(freqs[idx])
+    lp = float(np.log10(np.maximum(psd_lin[idx], 1e-30)))
+    return cf, lp
+
 def fit_specparam(freqs, mean_lin, fmin, fmax, aperiodic_mode):
     fm = SpectralModel(
         aperiodic_mode=aperiodic_mode,
@@ -107,6 +116,10 @@ def main(cnt_path, out_dir="specparam_out_blocks", fmin=2, fmax=45, aperiodic_mo
 
         # Average PSD across repeats
         psd_avg = np.mean(np.vstack(by_hz[hz]), axis=0)
+        stim_bin_cf, stim_bin_logp = bin_power_at(freqs_ref, psd_avg, hz)
+        harm2_bin_cf, harm2_bin_logp = bin_power_at(freqs_ref, psd_avg, 2*hz)
+        harm3_bin_cf, harm3_bin_logp = bin_power_at(freqs_ref, psd_avg, 3*hz)
+
 
         fm = fit_specparam(freqs_ref, psd_avg, fmin, fmax, aperiodic_mode)
 
@@ -153,6 +166,18 @@ def main(cnt_path, out_dir="specparam_out_blocks", fmin=2, fmax=45, aperiodic_mo
             peaks = peaks.reshape(1, 3)
         df_peaks = pd.DataFrame(peaks, columns=["center_freq", "peak_power", "bandwidth"])
         df_peaks = df_peaks.sort_values("peak_power", ascending=False).reset_index(drop=True)
+        def nearest_peak(df, target, tol=1.0):
+            if df is None or len(df) == 0:
+                return np.nan, np.nan, np.nan
+            d = np.abs(df["center_freq"].values - float(target))
+            i = int(np.argmin(d))
+            if d[i] <= tol:
+                return float(df.loc[i, "center_freq"]), float(df.loc[i, "peak_power"]), float(df.loc[i, "bandwidth"])
+            return np.nan, np.nan, np.nan
+
+        stim_cf, stim_pw, stim_bw = nearest_peak(df_peaks, hz, tol=1.0)
+        harm2_cf, harm2_pw, harm2_bw = nearest_peak(df_peaks, 2*hz, tol=1.0)
+        harm3_cf, harm3_pw, harm3_bw = nearest_peak(df_peaks, 3*hz, tol=1.0)
 
         row = {
             "file": base,
@@ -164,6 +189,12 @@ def main(cnt_path, out_dir="specparam_out_blocks", fmin=2, fmax=45, aperiodic_mo
             "offset": offset,
             "knee": knee,
             "exponent": exponent,
+            "stim_cf": stim_cf, "stim_pw": stim_pw, "stim_bw": stim_bw,
+            "harm2_cf": harm2_cf, "harm2_pw": harm2_pw, "harm2_bw": harm2_bw,
+            "harm3_cf": harm3_cf, "harm3_pw": harm3_pw, "harm3_bw": harm3_bw,
+            "stim_bin_cf": stim_bin_cf, "stim_bin_logp": stim_bin_logp,
+            "harm2_bin_cf": harm2_bin_cf, "harm2_bin_logp": harm2_bin_logp,
+            "harm3_bin_cf": harm3_bin_cf, "harm3_bin_logp": harm3_bin_logp,
         }
 
         # Top-3 peaks as columns

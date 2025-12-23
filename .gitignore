@@ -37,7 +37,9 @@ results_incomplete/
 quicklook/
 specparam_out/
 specparam_out_blocks/
-
+specparam_out_blocks_all/
+demo_overview/
+report_VEP02/
 
 # Notebooks en logs
 .ipynb_checkpoints/

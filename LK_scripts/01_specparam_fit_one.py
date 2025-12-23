@@ -51,9 +51,21 @@ def extract_freqs_psd(df: pd.DataFrame):
     mask = np.isfinite(freqs) & np.isfinite(psd)
     freqs, psd = freqs[mask], psd[mask]
 
-    # Als PSD niet negatief is, is het vaak lineair. Specparam/FOOOF werkt meestal op log10 power.
-    if np.nanmin(psd) >= 0:
-        psd = np.log10(psd + 1e-20)
+    if psd.size == 0:
+        raise ValueError("PSD is leeg na opschonen (NaN/Inf filtering).")
+
+    # Specparam/FOOOF verwachten lineaire PSD (>0). Niet zelf loggen.
+    # Als er negatieve waarden in zitten, dan is dit waarschijnlijk al log10 of dB.
+    if np.nanmin(psd) < 0:
+        # Heuristiek: grote negatieve waarden zijn vaak dB
+        if np.nanmedian(psd) < -50 or np.nanmin(psd) < -200:
+            psd = 10 ** (psd / 10.0)   # dB -> lineair
+        else:
+            psd = 10 ** psd            # log10 -> lineair
+
+    # Zorg dat alles strikt > 0 is (anders gaat specparam log10() stuk)
+    eps = np.finfo(float).tiny
+    psd = np.clip(psd, eps, None)
 
     return freqs, psd
 
@@ -82,7 +94,7 @@ def main():
 
     ModelCls = get_model_class()
     model = safe_init_model(ModelCls)
-    model.fit(freqs_fit, psd_fit)
+    model.fit(freqs_fit, psd_fit, freq_range=SPEC_F_RANGE)
 
     # plot
     plt.figure()

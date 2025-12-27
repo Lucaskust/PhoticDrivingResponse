@@ -120,6 +120,11 @@ def main(cnt_path, out_dir="specparam_out_blocks", fmin=2, fmax=45, aperiodic_mo
         harm2_bin_cf, harm2_bin_logp = bin_power_at(freqs_ref, psd_avg, 2*hz)
         harm3_bin_cf, harm3_bin_logp = bin_power_at(freqs_ref, psd_avg, 3*hz)
 
+        # Save PSD repeats too (for repeatability plots)
+        rep_arr = np.vstack(by_hz[hz])
+        np.save(os.path.join(out_dir, f"{base}_{int(hz)}Hz_psd_repeats.npy"), rep_arr)
+        print(f"Saved repeats: {base} {int(hz)}Hz -> {rep_arr.shape}")
+
 
         fm = fit_specparam(freqs_ref, psd_avg, fmin, fmax, aperiodic_mode)
 

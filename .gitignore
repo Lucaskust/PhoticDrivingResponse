@@ -6,16 +6,6 @@ venv/
 __pycache__/
 *.pyc
 
-# Result folders / data outputs
-results_POWER/
-results_PLV/
-results_incomplete/
-LK_derived/
-LK_figures/
-derived/
-figures/
-*.pkl
-
 # OS / editor
 .vscode/
 .DS_Store
@@ -29,6 +19,8 @@ figures/
 *.mat
 *.csv
 *.tsv
+*.pkl
+*.pdf
 
 # generated results
 results_POWER/
@@ -40,6 +32,10 @@ specparam_out_blocks/
 specparam_out_blocks_all/
 demo_overview/
 report_VEP02/
+LK_derived/
+LK_figures/
+derived/
+figures/
 
 # Notebooks en logs
 .ipynb_checkpoints/

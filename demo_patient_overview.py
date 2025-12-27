@@ -105,13 +105,44 @@ def fit_specparam(freqs, psd_lin, fmin=2, fmax=45, aperiodic_mode="fixed"):
     fm.fit(freqs, psd_lin, freq_range=(fmin, fmax))
     return fm
 
+def get_peak_params(fm):
+    """Robuust peak ophalen voor verschillende specparam versies."""
+    peaks = None
+
+    # 1) probeer via get_params (meest betrouwbaar)
+    if hasattr(fm, "get_params"):
+        for key in ["peak_params", "peaks", "peak"]:
+            try:
+                peaks = fm.get_params(key)
+                break
+            except Exception:
+                pass
+
+    # 2) fallback op attribute (als die bestaat)
+    if peaks is None:
+        peaks = getattr(fm, "peak_params_", None)
+
+    # 3) normaliseer naar Nx3
+    if peaks is None:
+        peaks = np.empty((0, 3))
+    peaks = np.asarray(peaks)
+
+    if peaks.ndim == 1 and peaks.size == 0:
+        peaks = np.empty((0, 3))
+    elif peaks.ndim == 1 and peaks.size == 3:
+        peaks = peaks.reshape(1, 3)
+
+    return peaks
+
+
 def nearest_peak(df, target, tol=1.0):
     if df is None or len(df) == 0:
         return np.nan, np.nan, np.nan
     d = np.abs(df["center_freq"].values - float(target))
     i = int(np.argmin(d))
     if d[i] <= tol:
-        return float(df.loc[i, "center_freq"]), float(df.loc[i, "peak_power"]), float(df.loc[i, "bandwidth"])
+        row = df.iloc[i]
+        return float(row["center_freq"]), float(row["peak_power"]), float(row["bandwidth"])
     return np.nan, np.nan, np.nan
 
 def bin_power_at(freqs, psd_lin, target_hz):
@@ -187,10 +218,12 @@ def make_report(cnt_path, out_dir="report_out", fmin=2, fmax=45, aperiodic_mode=
         fit_models[hz] = fm
 
         # peaks dataframe
-        peaks = getattr(fm, "peak_params_", np.empty((0, 3)))
+        # peaks dataframe (robust)
+        peaks = get_peak_params(fm)
         dfp = pd.DataFrame(peaks, columns=["center_freq", "peak_power", "bandwidth"])
         dfp = dfp.sort_values("peak_power", ascending=False).reset_index(drop=True)
         peak_dfs[hz] = dfp
+
 
         stim_cf, stim_pw, stim_bw = nearest_peak(dfp, hz, tol=1.0)
         harm2_cf, harm2_pw, harm2_bw = nearest_peak(dfp, 2*hz, tol=1.0)

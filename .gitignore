@@ -36,6 +36,8 @@ LK_derived/
 LK_figures/
 derived/
 figures/
+t0_overview_plots/
+t0_repeatability/
 
 # Notebooks en logs
 .ipynb_checkpoints/

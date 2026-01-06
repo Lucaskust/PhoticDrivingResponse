@@ -29,7 +29,7 @@ def load_labels(labels_path: Path) -> pd.DataFrame:
     df = df.copy()
     df.columns = [c.strip().lower() for c in df.columns]
 
-    required = {"file", "t1", "t2", "t2_t1"}
+    required = {"file", "t1", "t2", "t2_t1"} 
     missing = required - set(df.columns)
     if missing:
         raise ValueError(f"Labels file missing columns: {missing}. Found: {list(df.columns)}")

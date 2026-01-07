@@ -8,13 +8,14 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from pdr.utils.config import load_config
+from pdr.core.config import load_config  # <-- keep only this one
 from pdr.utils.output import make_run_dir, copy_config
 
 from pdr.core.patients import patient_files, eeg
 from pdr.features.power import Power
 from pdr.features.phase import Phase
 from pdr.features.specparam_blocks import SpecParamBlocks
+
 
 
 def _trial_timepoints(trial: str, time: str):
@@ -42,24 +43,32 @@ def main():
                     help="Save intermediate CSVs per file into outputs/<run_id>/intermediates/<file>/...")
     args_cli = ap.parse_args()
 
-    cfg = load_config(args_cli.config)
+    cfg = load_config(Path(args_cli.config))
 
-    # ---- Run folder ----
-    run_dir = make_run_dir(cfg["outputs"]["root"], cfg["outputs"].get("run_name", "run"))
+    out_cfg = cfg.get("output") or cfg.get("outputs")
+    if out_cfg is None:
+        raise KeyError("Config mist [output] of [outputs] sectie.")
+
+    run_dir = make_run_dir(out_cfg["root"], out_cfg.get("run_tag", out_cfg.get("run_name", "run")))
     copy_config(args_cli.config, run_dir)
     print(f"[OK] run_dir = {run_dir}")
+
 
     # ---- Build an args-like object for patient_files (keeps legacy signature) ----
     timepoints = _trial_timepoints(args_cli.trial, args_cli.time)
 
+    data_cfg = cfg.get("data", {})
+    data_root = data_cfg.get("root") or data_cfg.get("data_root") or "D:/"
+
     args_pf = SimpleNamespace(
         trial=args_cli.trial,
-        time=timepoints,  # list like ['t0','t2']
-        data_root=cfg["data"]["root"],
-        t0_folder=cfg["data"].get("t0_folder", "cenobamate_eeg_1"),
-        t1_folder=cfg["data"].get("t1_folder", "cenobamate_eeg_2"),
-        t2_folder=cfg["data"].get("t2_folder", "cenobamate_eeg_3"),
-    )
+        time=timepoints,
+        data_root=data_root,
+        t0_folder=data_cfg.get("t0_folder", "cenobamate_eeg_1"),
+        t1_folder=data_cfg.get("t1_folder", "cenobamate_eeg_2"),
+        t2_folder=data_cfg.get("t2_folder", "cenobamate_eeg_3"),
+)
+
 
     # trial_map is unused inside patient_files but kept for compatibility
     trial_map = {"t0": "T0_T1_T2", "t1": "T0_T1", "t2": "T0_T2"}
@@ -73,8 +82,10 @@ def main():
         files = files[: args_cli.max_files]
 
     # ---- Parameters ----
-    passband = [float(cfg["preprocess"]["passband_low"]), float(cfg["preprocess"]["passband_high"])]
-    use_occipital = bool(cfg["preprocess"].get("use_occipital", True))
+    pre = cfg.get("preprocess", {})
+    passband = [float(pre.get("passband_low", 0.5)), float(pre.get("passband_high", 100.0))]
+    use_occipital = bool(pre.get("use_occipital", True))
+
 
     out_power = run_dir / "features" / "power"
     out_plv = run_dir / "features" / "plv"
@@ -143,12 +154,14 @@ def main():
             skipped.append((cnt_path.name, "plv", str(e)))
             continue
         # ---- SPECPARAM ----
-            # ---- SPECPARAM ----
         sp_cfg = cfg.get("specparam", {})
-        if bool(sp_cfg.get("enabled", False)):
+        use_specparam = bool(sp_cfg.get("enabled", cfg.get("pipeline", {}).get("use_specparam", False)))
+
+        if use_specparam:
             try:
                 sp = SpecParamBlocks(
                     out_dir=out_spec,
+                    cfg=sp_cfg,  # <-- deze regel is belangrijk
                     fmin=float(sp_cfg.get("fmin", 2.0)),
                     fmax=float(sp_cfg.get("fmax", 45.0)),
                     upper_lim_psd=int(sp_cfg.get("upper_lim_psd", 70)),
@@ -156,12 +169,15 @@ def main():
                     padding=str(sp_cfg.get("padding", "zeros")),
                     presets=list(sp_cfg.get("presets", ["baseline"])),
                 )
+
+
                 df_sp = sp.run_from_raw(raw, base_name=base)
                 df_sp.to_csv(out_spec / f"{base}_specparam_summary_ALL.csv", index=False)
                 print(f"[OK] SpecParam saved -> {out_spec}")
             except Exception as e:
                 print(f"[SKIP] SpecParam failed for {cnt_path.name}: {e}")
                 skipped.append((cnt_path.name, "specparam", str(e)))
+
 
             
     # ---- Summary ----

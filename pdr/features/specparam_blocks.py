@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
@@ -10,10 +10,11 @@ import matplotlib.pyplot as plt
 
 from specparam import SpectralModel
 
+from pdr.core.config import resolve_specparam_config
 from pdr.features.power import Power
 
 
-# Start-presets (kunnen we later in config zetten)
+# Python-side defaults (kan later via TOML overschreven worden met preset_overrides)
 SPEC_PRESETS = {
     "baseline": dict(
         aperiodic_mode="fixed",
@@ -47,23 +48,95 @@ def _ensure_dir(p: Optional[Path]) -> Optional[Path]:
 
 
 def _safe_get_r2_err(fm) -> tuple[float, float]:
-    r2 = getattr(fm, "r_squared_", np.nan)
-    err = getattr(fm, "error_", np.nan)
+    import numpy as np
 
-    res = getattr(fm, "results_", None)
-    if res is None:
-        res = getattr(fm, "results", None)
+    def _as_float(x):
+        try:
+            x = float(x)
+            return x
+        except Exception:
+            return np.nan
+
+    # 1) Direct model attributes (verschillen per versie)
+    for k in ["r_squared_", "r_squared", "r2_", "r2"]:
+        v = getattr(fm, k, None)
+        if v is not None and np.isfinite(_as_float(v)):
+            r2 = _as_float(v)
+            break
+    else:
+        r2 = np.nan
+
+    for k in ["error_", "error", "fit_error_", "fit_error", "rmse_", "rmse"]:
+        v = getattr(fm, k, None)
+        if v is not None and np.isfinite(_as_float(v)):
+            err = _as_float(v)
+            break
+    else:
+        err = np.nan
+
+    # 2) Results object / dict
+    res = None
+    for meth in ["get_results", "get_fit_results", "get_results_"]:
+        if hasattr(fm, meth):
+            try:
+                res = getattr(fm, meth)()
+                break
+            except Exception:
+                pass
+
     if res is not None:
-        r2 = getattr(res, "r_squared_", r2)
-        r2 = getattr(res, "r_squared", r2)
-        err = getattr(res, "error_", err)
-        err = getattr(res, "error", err)
+        if isinstance(res, dict):
+            if not np.isfinite(r2):
+                r2 = _as_float(res.get("r_squared", res.get("r2", res.get("r_squared_"))))
+            if not np.isfinite(err):
+                err = _as_float(res.get("error", res.get("fit_error", res.get("rmse"))))
+        else:
+            if not np.isfinite(r2):
+                for k in ["r_squared_", "r_squared", "r2_", "r2"]:
+                    v = getattr(res, k, None)
+                    if v is not None and np.isfinite(_as_float(v)):
+                        r2 = _as_float(v)
+                        break
+            if not np.isfinite(err):
+                for k in ["error_", "error", "fit_error_", "fit_error", "rmse_", "rmse"]:
+                    v = getattr(res, k, None)
+                    if v is not None and np.isfinite(_as_float(v)):
+                        err = _as_float(v)
+                        break
+
+    # 3) Fallback: compute R² ourselves (als spectra beschikbaar zijn)
+    if not np.isfinite(r2):
+        y = None
+        yhat = None
+        print("Computing R² fallback...")
+        for k in ["power_spectrum_", "power_spectrum", "spectrum_"]:
+            if hasattr(fm, k):
+                y = getattr(fm, k)
+                break
+
+        for k in ["modeled_spectrum_", "fooofed_spectrum_", "model_spectrum_", "model_"]:
+            if hasattr(fm, k):
+                yhat = getattr(fm, k)
+                break
+
+        try:
+            if y is not None and yhat is not None:
+                y = np.asarray(y, dtype=float)
+                yhat = np.asarray(yhat, dtype=float)
+                m = np.isfinite(y) & np.isfinite(yhat)
+                if np.any(m):
+                    ss_res = np.sum((y[m] - yhat[m]) ** 2)
+                    ss_tot = np.sum((y[m] - np.mean(y[m])) ** 2)
+                    r2 = 1.0 - (ss_res / ss_tot) if ss_tot > 0 else np.nan
+                    # error fallback: RMSE
+                    err = np.sqrt(ss_res / np.sum(m)) if np.sum(m) > 0 else err
+        except Exception:
+            pass
 
     return float(r2) if r2 is not None else np.nan, float(err) if err is not None else np.nan
 
 
 def _safe_get_aperiodic(fm) -> tuple[float, float, float]:
-    # returns offset, knee, exponent (knee can be NaN)
     ap = None
     for key in ["aperiodic", "aperiodic_params"]:
         try:
@@ -106,23 +179,23 @@ def _safe_get_peaks(fm) -> np.ndarray:
 @dataclass
 class SpecParamBlocks:
     out_dir: Path
+    cfg: dict = field(default_factory=dict)
+
+    # defaults (worden meestal overschreven door cfg)
     fmin: float = 2.0
     fmax: float = 45.0
-    upper_lim_psd: int = 40  # must be >= fmax ideally
+    upper_lim_psd: int = 70
     trim: float = 0.0
     padding: str = "zeros"
-    presets: Optional[list[str]] = None  # default: all keys in SPEC_PRESETS
+    presets: Optional[list[str]] = None  # welke presets runnen (None = alle)
 
     def run_from_raw(self, raw, base_name: str) -> pd.DataFrame:
-        """
-        Computes PSD-per-block (avg reps) using Power internals, then fits SpecParam for each freq.
-        Returns summary dataframe (one row per freq per preset).
-        """
-        self.out_dir = _ensure_dir(self.out_dir)
+        self.out_dir = Path(self.out_dir)
+        self.out_dir.mkdir(parents=True, exist_ok=True)
 
-        # 1) Reuse Power's block extraction + epoching + PSD logic
-        df_stim = Power._stimulation_power(raw, save=False, out_dir=None)
-        epochs, df_epochs = Power._epoch_power(df_stim, raw, save=False, plot=False, out_dir=None)
+        # ---- PSD per blok (avg reps) via Power internals ----
+        df_stim = Power._stimulation_power(raw, save=False)
+        epochs, df_epochs = Power._epoch_power(df_stim, raw, save=False, plot=False)
         _, fft_lin, fft_freq = Power._fft_power(
             epochs,
             df_epochs,
@@ -135,48 +208,45 @@ class SpecParamBlocks:
         ch_names = epochs.info["ch_names"]
         freqs_present = sorted(df_epochs["freq"].dropna().astype(int).unique())
 
-        # Fit range must be inside fft_freq range
-        fmin = max(self.fmin, float(np.min(fft_freq)))
-        fmax = min(self.fmax, float(np.max(fft_freq)))
-        if fmax <= fmin:
-            raise ValueError(f"SpecParam freq_range invalid after clipping: ({fmin}, {fmax})")
-
+        # Welke presets runnen?
         preset_names = self.presets or list(SPEC_PRESETS.keys())
 
-        summary_rows = []
+        rows = []
 
         for preset in preset_names:
-            if preset not in SPEC_PRESETS:
-                raise ValueError(f"Unknown preset '{preset}'. Available: {list(SPEC_PRESETS.keys())}")
+            preset_dir = self.out_dir / preset
+            preset_dir.mkdir(parents=True, exist_ok=True)
 
-            preset_dir = _ensure_dir(self.out_dir / preset)
+            # pak params uit config (jouw TOML) + fallback SPEC_PRESETS
+            fit_fmin, fit_fmax, model_params = resolve_specparam_config(self.cfg, preset=preset, fallback_presets=SPEC_PRESETS)
+
+            # clip aan fft range
+            fit_fmin = max(float(fit_fmin), float(np.min(fft_freq)))
+            fit_fmax = min(float(fit_fmax), float(np.max(fft_freq)))
+            if fit_fmax <= fit_fmin:
+                raise ValueError(f"SpecParam freq_range invalid after clipping: ({fit_fmin}, {fit_fmax})")
 
             for f in freqs_present:
-                # Average across channels (rep=0 is mean over reps)
-                # fft_lin is dict: [rep][freq][ch] -> np.array
-                try:
-                    stack = np.stack([fft_lin[0][f][ch] for ch in ch_names], axis=0)
-                    mean_lin = np.nanmean(stack, axis=0)
-                except Exception:
-                    continue
-
+                # mean over channels (rep=0 = mean over reps)
+                stack = np.stack([fft_lin[0][f][ch] for ch in ch_names], axis=0)
+                mean_lin = np.nanmean(stack, axis=0)
                 mean_lin = np.asarray(mean_lin, dtype=float)
                 mean_lin = np.maximum(mean_lin, 1e-30)
 
-                fm = SpectralModel(**SPEC_PRESETS[preset])
-                fm.fit(fft_freq, mean_lin, freq_range=(fmin, fmax))
+                fm = SpectralModel(**model_params)
+                fm.fit(fft_freq, mean_lin, freq_range=(fit_fmin, fit_fmax))
 
                 r2, err = _safe_get_r2_err(fm)
                 offset, knee, exponent = _safe_get_aperiodic(fm)
 
-                # Save plot
+                # plot
                 fig, ax = plt.subplots(figsize=(8, 4))
                 fm.plot(ax=ax, plot_peaks="shade")
                 ax.set_title(f"{base_name} | f={f} | preset={preset}")
                 fig.savefig(preset_dir / f"{base_name}_f{f}_specparam.png", dpi=200, bbox_inches="tight")
                 plt.close(fig)
 
-                # Save peak table
+                # peaks
                 peaks = _safe_get_peaks(fm)
                 df_peaks = pd.DataFrame(peaks, columns=["center_freq", "peak_power", "bandwidth"])
                 df_peaks.insert(0, "file", base_name)
@@ -184,13 +254,12 @@ class SpecParamBlocks:
                 df_peaks.insert(2, "preset", preset)
                 df_peaks.to_csv(preset_dir / f"{base_name}_f{f}_peaks.csv", index=False)
 
-                # Save aperiodic row
                 row = {
                     "file": base_name,
                     "freq_hz": f,
                     "preset": preset,
-                    "fmin_fit": fmin,
-                    "fmax_fit": fmax,
+                    "fmin_fit": fit_fmin,
+                    "fmax_fit": fit_fmax,
                     "r2": r2,
                     "error": err,
                     "offset": offset,
@@ -199,10 +268,8 @@ class SpecParamBlocks:
                     "n_channels": len(ch_names),
                     "channels": ",".join(ch_names),
                 }
-                pd.DataFrame([row]).to_csv(preset_dir / f"{base_name}_f{f}_aperiodic.csv", index=False)
+                rows.append(row)
 
-                summary_rows.append(row)
-
-        df_summary = pd.DataFrame(summary_rows)
+        df_summary = pd.DataFrame(rows)
         df_summary.to_csv(self.out_dir / f"{base_name}_specparam_summary.csv", index=False)
         return df_summary

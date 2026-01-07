@@ -1,23 +1,110 @@
+# =========================
+# PhoticDrivingResponse config
+# Alles wat je wil tweaken doe je hier.
+# =========================
+
+[pipeline]
+# Welke onderdelen wil je laten draaien in run_pipeline?
+use_power = true
+use_plv = true
+use_specparam = true
+
 [data]
-root = "D:/"
+# Root waar jouw .cnt mappen staan (Windows USB / schijf)
+data_root = 'D:/'
 t0_folder = "cenobamate_eeg_1"
 t1_folder = "cenobamate_eeg_2"
 t2_folder = "cenobamate_eeg_3"
 
-[preprocess]
-passband_low = 0.5
-passband_high = 100.0
-use_occipital = true
+# Mapping van timepoint -> foldernaam op jouw schijf
+# (jij: cenobamate_eeg_1 = t0, _2 = t1, _3 = t2)
+time_to_folder = { t0 = 'cenobamate_eeg_1', t1 = 'cenobamate_eeg_2', t2 = 'cenobamate_eeg_3' }
 
-[outputs]
-root = "outputs"
-run_name = "dev"
+[preprocess]
+# Bandpass filter (Hz) voor raw EEG in power/phase pipelines
+passband = [0.5, 100.0]
+
+# Notch filter (line noise). Vaak 50Hz in NL.
+notch_hz = 50.0
+
+# Alleen occipitaal gebruiken (O1/O2/Oz). Als false: alle EEG kanalen.
+use_occipital_only = true
+occipital_channels = ['O1', 'O2', 'Oz']
+
+[power]
+# Max frequentie die je analyseert/rapporteert (Hz)
+upper_lim_hz = 40
+
+# Aantal harmonics om te evalueren (SNR/rapportage)
+n_harmonics = 5
+
+# Epoch trim (s): knipt begin van epochs af om onset/transient te verminderen
+trim_s = 0.0
+
+# Padding optie bij FFT/Welch: "copy" | "zeros" | "none"
+padding = "copy"
+
+# Welch settings binnen de power-FFT (in jouw implementatie is window vaak 1s)
+welch_window_s = 1.0
+welch_overlap = 0.5
+
+[phase]
+# Max harmonic frequentie die je meeneemt (Hz)
+upper_lim_hz = 40
+
+# Aantal cycli per harmonic epoch (tmax = cycles/harmonic)
+cycles = 1.5
+
+# Bandbreedte rond harmonic bij bandpass in phase (h±bandwidth_hz)
+bandwidth_hz = 1.0
 
 [specparam]
-enabled = true
+# ====== SpecParam / FOOOF (jouw aandeel) ======
+# Dit stuurt hoe de aperiodic + peaks fit gebeurt op PSDs per blok.
+
+# Frequentiebereik dat je fit (Hz)
 fmin = 2.0
 fmax = 45.0
-upper_lim_psd = 70
-trim = 0.0
-padding = "zeros"
-presets = ["baseline", "conservative", "harmonics"]
+
+# aperiodic_mode: "fixed" (offset+exponent) of "knee" (offset+knee+exponent)
+aperiodic_mode = "fixed"
+
+# Kies één preset hieronder. Jij kunt later extra presets toevoegen.
+preset = "baseline"  # "baseline" | "conservative" | "harmonics"
+
+# Overrides: alles wat je hier zet overschrijft de preset.
+# Handig om snel te testen zonder de preset-tabel te wijzigen.
+# Voorbeeld:
+# override = { peak_threshold = 2.5, max_n_peaks = 4 }
+override = {}
+
+# ---- Presets ----
+# Let op: peak_width_limits heeft interactie met freq-resolutie.
+# Als jouw PSD bins 1Hz zijn, dan heeft een lower bound van 1 geen effect en krijg je warnings.
+# Richtlijn: lower bound ~ 2x resolutie → bv 2.0 Hz.
+
+[specparam.presets.baseline]
+peak_width_limits = [2.0, 12.0]
+max_n_peaks = 6
+min_peak_height = 0.05
+peak_threshold = 2.0
+
+[specparam.presets.conservative]
+peak_width_limits = [3.0, 12.0]
+max_n_peaks = 4
+min_peak_height = 0.10
+peak_threshold = 2.5
+
+[specparam.presets.harmonics]
+# Iets agressiever peaks toelaten (meer peaks, lagere threshold)
+peak_width_limits = [2.0, 8.0]
+max_n_peaks = 10
+min_peak_height = 0.05
+peak_threshold = 1.5
+
+[output]
+# Alles komt in outputs/<run_id>/...
+root = "outputs"
+
+# Korte tag die je in de run_id terugziet
+run_tag = "dev"

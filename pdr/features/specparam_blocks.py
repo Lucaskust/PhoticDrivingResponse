@@ -48,91 +48,32 @@ def _ensure_dir(p: Optional[Path]) -> Optional[Path]:
 
 
 def _safe_get_r2_err(fm) -> tuple[float, float]:
-    import numpy as np
+    """Specparam v2 stores metrics in fm.results.metrics.results."""
+    r2 = np.nan
+    err = np.nan
 
-    def _as_float(x):
-        try:
-            x = float(x)
-            return x
-        except Exception:
-            return np.nan
+    # Specparam v2: metrics live here
+    try:
+        md = fm.results.metrics.results  # dict
+        err = md.get("error_mae", md.get("error_rmse", md.get("error", np.nan)))
+        r2 = md.get("gof_rsquared", md.get("rsquared", md.get("gof_r2", np.nan)))
+        return float(r2), float(err)
+    except Exception:
+        pass
 
-    # 1) Direct model attributes (verschillen per versie)
-    for k in ["r_squared_", "r_squared", "r2_", "r2"]:
-        v = getattr(fm, k, None)
-        if v is not None and np.isfinite(_as_float(v)):
-            r2 = _as_float(v)
-            break
-    else:
-        r2 = np.nan
+    # Specparam v2 also exposes FitResults via results.get_results()
+    try:
+        fres = fm.results.get_results()
+        md = getattr(fres, "metrics", {}) or {}
+        err = md.get("error_mae", md.get("error_rmse", np.nan))
+        r2 = md.get("gof_rsquared", np.nan)
+        return float(r2), float(err)
+    except Exception:
+        pass
 
-    for k in ["error_", "error", "fit_error_", "fit_error", "rmse_", "rmse"]:
-        v = getattr(fm, k, None)
-        if v is not None and np.isfinite(_as_float(v)):
-            err = _as_float(v)
-            break
-    else:
-        err = np.nan
-
-    # 2) Results object / dict
-    res = None
-    for meth in ["get_results", "get_fit_results", "get_results_"]:
-        if hasattr(fm, meth):
-            try:
-                res = getattr(fm, meth)()
-                break
-            except Exception:
-                pass
-
-    if res is not None:
-        if isinstance(res, dict):
-            if not np.isfinite(r2):
-                r2 = _as_float(res.get("r_squared", res.get("r2", res.get("r_squared_"))))
-            if not np.isfinite(err):
-                err = _as_float(res.get("error", res.get("fit_error", res.get("rmse"))))
-        else:
-            if not np.isfinite(r2):
-                for k in ["r_squared_", "r_squared", "r2_", "r2"]:
-                    v = getattr(res, k, None)
-                    if v is not None and np.isfinite(_as_float(v)):
-                        r2 = _as_float(v)
-                        break
-            if not np.isfinite(err):
-                for k in ["error_", "error", "fit_error_", "fit_error", "rmse_", "rmse"]:
-                    v = getattr(res, k, None)
-                    if v is not None and np.isfinite(_as_float(v)):
-                        err = _as_float(v)
-                        break
-
-    # 3) Fallback: compute R² ourselves (als spectra beschikbaar zijn)
-    if not np.isfinite(r2):
-        y = None
-        yhat = None
-        print("Computing R² fallback...")
-        for k in ["power_spectrum_", "power_spectrum", "spectrum_"]:
-            if hasattr(fm, k):
-                y = getattr(fm, k)
-                break
-
-        for k in ["modeled_spectrum_", "fooofed_spectrum_", "model_spectrum_", "model_"]:
-            if hasattr(fm, k):
-                yhat = getattr(fm, k)
-                break
-
-        try:
-            if y is not None and yhat is not None:
-                y = np.asarray(y, dtype=float)
-                yhat = np.asarray(yhat, dtype=float)
-                m = np.isfinite(y) & np.isfinite(yhat)
-                if np.any(m):
-                    ss_res = np.sum((y[m] - yhat[m]) ** 2)
-                    ss_tot = np.sum((y[m] - np.mean(y[m])) ** 2)
-                    r2 = 1.0 - (ss_res / ss_tot) if ss_tot > 0 else np.nan
-                    # error fallback: RMSE
-                    err = np.sqrt(ss_res / np.sum(m)) if np.sum(m) > 0 else err
-        except Exception:
-            pass
-
+    # Backwards-compatible (old fooof-style attrs)
+    r2 = getattr(fm, "r_squared_", getattr(fm, "r_squared", np.nan))
+    err = getattr(fm, "error_", getattr(fm, "error", np.nan))
     return float(r2) if r2 is not None else np.nan, float(err) if err is not None else np.nan
 
 
@@ -181,13 +122,12 @@ class SpecParamBlocks:
     out_dir: Path
     cfg: dict = field(default_factory=dict)
 
-    # defaults (worden meestal overschreven door cfg)
     fmin: float = 2.0
     fmax: float = 45.0
     upper_lim_psd: int = 70
     trim: float = 0.0
     padding: str = "zeros"
-    presets: Optional[list[str]] = None  # welke presets runnen (None = alle)
+    presets: Optional[list[str]] = None
 
     def run_from_raw(self, raw, base_name: str) -> pd.DataFrame:
         self.out_dir = Path(self.out_dir)
@@ -207,6 +147,8 @@ class SpecParamBlocks:
 
         ch_names = epochs.info["ch_names"]
         freqs_present = sorted(df_epochs["freq"].dropna().astype(int).unique())
+        freqs_present = [f for f in freqs_present if f > 0]
+
 
         # Welke presets runnen?
         preset_names = self.presets or list(SPEC_PRESETS.keys())

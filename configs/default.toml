@@ -103,11 +103,17 @@ min_peak_height = 0.05
 peak_threshold = 1.5
 
 [labels]
+# Excel bestand met labels
 path = "D:/labels_bestand.xlsx"
+
+# Dit is de KOLOM in Excel die je wilt gebruiken (input voor attach_labels)
+excel_col = "t2_t1"
+label_source_col = "t2_t1"   # kolom in je Excel labels bestand
 
 [ml]
 dataset = ""          # leeg = auto-pick latest dataset_*_wide.csv in run_dir/ml
-label_col = "t2_t1"
+# Dit is de kolomnaam in de DATASET na attach_labels (classifier gebruikt dit)
+label_col = "label"
 group_col = "patient_id"
 file_col  = "file"
 dataset_kind = "wide"         # "wide" of "long"
@@ -120,6 +126,12 @@ inner_cv  = 3
 rfecv = false
 gridsearch = false
 seed = 42
+
+[features]
+# prefixes zoals jouw kolommen nu zijn
+prefix_power = "power_"
+prefix_plv   = "plv_"
+prefix_spec  = "spec_"
 
 [output]
 # Alles komt in outputs/<run_id>/...

@@ -167,7 +167,7 @@ def main():
                     upper_lim_psd=int(sp_cfg.get("upper_lim_psd", 70)),
                     trim=float(sp_cfg.get("trim", 0.0)),
                     padding=str(sp_cfg.get("padding", "zeros")),
-                    presets=list(sp_cfg.get("presets", ["baseline"])),
+                    presets=list(sp_cfg.get("enabled_presets", [sp_cfg.get("preset", "baseline")]))
                 )
 
 

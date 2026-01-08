@@ -102,6 +102,25 @@ max_n_peaks = 10
 min_peak_height = 0.05
 peak_threshold = 1.5
 
+[labels]
+path = "D:/labels_bestand.xlsx"
+
+[ml]
+dataset = ""          # leeg = auto-pick latest dataset_*_wide.csv in run_dir/ml
+label_col = "t2_t1"
+group_col = "patient_id"
+file_col  = "file"
+dataset_kind = "wide"         # "wide" of "long"
+timepoint   = "t2"          # "t0" | "t1" | "t2" | "all"
+feature_set = "all"         # "all" | "power" | "plv" | "specparam"
+
+n_repeats = 20
+test_size = 0.2
+inner_cv  = 3
+rfecv = false
+gridsearch = false
+seed = 42
+
 [output]
 # Alles komt in outputs/<run_id>/...
 root = "outputs"

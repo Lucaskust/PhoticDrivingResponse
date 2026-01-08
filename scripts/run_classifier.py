@@ -61,6 +61,21 @@ from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 
+import sys
+try:
+    import tomllib  # py>=3.11
+except ModuleNotFoundError:
+    import tomli as tomllib  # py<3.11
+
+
+def _load_toml(path: Path) -> dict:
+    with open(path, "rb") as f:
+        return tomllib.load(f)
+
+
+def _cli_has(flag: str) -> bool:
+    return flag in sys.argv
+
 
 # --- Optional scipy (Shapiro) ---
 try:
@@ -155,8 +170,9 @@ def _apply_feature_set(cols: List[str], feature_set: str) -> List[str]:
         pat = re.compile(r"(plv|phase)", re.IGNORECASE)
         return [c for c in cols if pat.search(c)]
     if fs == "specparam":
-        pat = re.compile(r"(specparam|aperiodic|offset|knee|exponent|peak|bandwidth|center_freq)", re.IGNORECASE)
+        pat = re.compile(r"(spec_|spec0_|specparam|aperiodic|offset|knee|exponent|peak|bandwidth|center_freq|r2|error)", re.IGNORECASE)
         return [c for c in cols if pat.search(c)]
+
     raise ValueError(f"Unknown feature_set: {feature_set}")
 
 
@@ -398,18 +414,36 @@ def _get_param_grid(name: str) -> Optional[Dict[str, List[Any]]]:
 def _stratified_group_split(
     df: pd.DataFrame, label_col: str, group_col: str, test_size: float, seed: int
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Split indices with stratification on group-level label.
-    Works even if later you include multiple rows per patient.
-    """
+
     grp = df[[group_col, label_col]].drop_duplicates(group_col)
     groups = grp[group_col].values
     y = grp[label_col].values
 
-    train_g, test_g = train_test_split(groups, test_size=test_size, stratify=y, random_state=seed)
+    # check of stratify kan
+    ok_stratify = True
+    uniq, counts = np.unique(y, return_counts=True)
+    if len(uniq) < 2 or np.min(counts) < 2:
+        ok_stratify = False
+
+    if ok_stratify:
+        try:
+            train_g, test_g = train_test_split(groups, test_size=test_size, stratify=y, random_state=seed)
+        except ValueError:
+            ok_stratify = False
+
+    if not ok_stratify:
+        rng = np.random.RandomState(seed)
+        perm = rng.permutation(groups)
+        n_groups = len(groups)
+        n_test = max(1, int(np.ceil(test_size * n_groups)))
+        n_test = min(n_test, n_groups - 1)  # zorg dat train niet leeg is
+        test_g = perm[:n_test]
+        train_g = perm[n_test:]
+
     train_idx = df.index[df[group_col].isin(train_g)].to_numpy()
     test_idx = df.index[df[group_col].isin(test_g)].to_numpy()
     return train_idx, test_idx
+
 
 
 def _ensure_dir(p: Path) -> None:
@@ -434,7 +468,46 @@ def main():
     ap.add_argument("--no-rfecv", action="store_true", help="Disable RFECV.")
     ap.add_argument("--gridsearch", action="store_true", help="Enable GridSearchCV for best model on each repeat.")
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--config", type=str, default=None, help="Path to .toml (loads [ml] defaults). CLI overrides config.")
     args = ap.parse_args()
+    
+    # ---- Optional config defaults (CLI overrides config) ----
+    if args.config:
+        cfg = _load_toml(Path(args.config))
+        ml = cfg.get("ml", {})
+
+        if not _cli_has("--timepoint"):
+            args.timepoint = ml.get("timepoint", args.timepoint)
+
+        if not _cli_has("--feature-set"):
+            args.feature_set = ml.get("feature_set", args.feature_set)
+
+        if not _cli_has("--n-repeats"):
+            args.n_repeats = int(ml.get("n_repeats", args.n_repeats))
+
+        if not _cli_has("--test-size"):
+            args.test_size = float(ml.get("test_size", args.test_size))
+
+        if not _cli_has("--inner-cv"):
+            args.inner_cv = int(ml.get("inner_cv", args.inner_cv))
+
+        if not _cli_has("--seed"):
+            args.seed = int(ml.get("seed", args.seed))
+
+        # booleans: alleen zetten als gebruiker niet expliciet flags meegaf
+        if (not _cli_has("--do-rfecv")) and (not _cli_has("--no-rfecv")):
+            args.do_rfecv = bool(ml.get("rfecv", False))
+            args.no_rfecv = False
+
+        if not _cli_has("--gridsearch"):
+            args.gridsearch = bool(ml.get("gridsearch", args.gridsearch))
+
+        if not _cli_has("--include"):
+            args.include = ml.get("include", args.include)
+
+        if not _cli_has("--exclude"):
+            args.exclude = ml.get("exclude", args.exclude)
+    # ---- End config defaults ----
 
     run_dir = Path(args.run_dir)
     ml_dir = run_dir / "ml"
@@ -512,6 +585,16 @@ def main():
 
     print(f"[INFO] Dataset: {ds_path}")
     print(f"[INFO] N={len(df)} | positives={int(y.sum())} | negatives={int((1-y).sum())}")
+    min_class = int(pd.Series(y).value_counts().min()) if len(y) else 0
+    n_groups = df[args.group_col].nunique()
+
+    if min_class < 2 or n_groups < 4:
+        raise ValueError(
+            f"Te weinig data voor group+stratified split. "
+            f"N={len(df)}, groups={n_groups}, min_class={min_class}. "
+            f"Run pipeline op meer files (hogere --max-files) of gebruik een run-dir met meer samples."
+        )
+
     print(f"[INFO] Features selected: {len(feat_cols)} | rfecv={do_rfecv} | gridsearch={args.gridsearch}")
 
     for rep in range(args.n_repeats):

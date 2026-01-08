@@ -121,7 +121,6 @@ def _safe_get_peaks(fm) -> np.ndarray:
 class SpecParamBlocks:
     out_dir: Path
     cfg: dict = field(default_factory=dict)
-
     fmin: float = 2.0
     fmax: float = 45.0
     upper_lim_psd: int = 70

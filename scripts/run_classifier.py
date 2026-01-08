@@ -156,24 +156,21 @@ def _pick_feature_columns(df: pd.DataFrame, meta_cols: set[str]) -> List[str]:
 
 
 def _apply_feature_set(cols: List[str], feature_set: str) -> List[str]:
-    """
-    Best-effort heuristic filters, because naming can differ.
-    Use --include / --exclude if you want exact control.
-    """
-    fs = feature_set.lower()
+    fs = (feature_set or "all").lower()
     if fs == "all":
         return cols
+
     if fs == "power":
-        pat = re.compile(r"(power|snr|pwr|base)", re.IGNORECASE)
-        return [c for c in cols if pat.search(c)]
+        return [c for c in cols if c.startswith("power_")]
+
     if fs == "plv":
-        pat = re.compile(r"(plv|phase)", re.IGNORECASE)
-        return [c for c in cols if pat.search(c)]
-    if fs == "specparam":
-        pat = re.compile(r"(spec_|spec0_|specparam|aperiodic|offset|knee|exponent|peak|bandwidth|center_freq|r2|error)", re.IGNORECASE)
-        return [c for c in cols if pat.search(c)]
+        return [c for c in cols if c.startswith("plv_")]
+
+    if fs in ("spec", "specparam"):
+        return [c for c in cols if c.startswith("spec_")]
 
     raise ValueError(f"Unknown feature_set: {feature_set}")
+
 
 
 def _apply_regex_filters(cols: List[str], include: Optional[List[str]], exclude: Optional[List[str]]) -> List[str]:

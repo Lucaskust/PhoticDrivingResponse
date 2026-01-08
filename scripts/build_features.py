@@ -228,10 +228,6 @@ def main():
     if not df_spec_long.empty:
         df_long = pd.merge(df_long, df_spec_long, on=["file", "freq_hz"], how="left")
 
-    # Add baseline spec0 (file-level) into long too (repeat per freq)
-    if not df_spec0.empty:
-        df_long = pd.merge(df_long, df_spec0, on=["file"], how="left")
-
     # Sort
     if not df_long.empty:
         df_long = df_long.sort_values(["file", "freq_hz"]).reset_index(drop=True)
@@ -242,6 +238,10 @@ def main():
 
     # Wide
     df_wide = make_wide(df_long)
+    
+    # voeg baseline spec0 1x per file toe (niet per freq)
+    if not df_spec0.empty:
+        df_wide = pd.merge(df_wide, df_spec0, on="file", how="left")
 
     wide_csv = out_dir / "features_wide.csv"
     df_wide.to_csv(wide_csv, index=False)

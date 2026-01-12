@@ -51,6 +51,8 @@ from sklearn.metrics import (
 
 from sklearn.impute import SimpleImputer
 from sklearn.feature_selection import VarianceThreshold, RFECV
+from collections import Counter
+from sklearn.inspection import permutation_importance
 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 
@@ -125,6 +127,29 @@ def _safe_auc(y_true: np.ndarray, y_score: np.ndarray) -> float:
     if len(np.unique(y_true)) < 2:
         return np.nan
     return float(roc_auc_score(y_true, y_score))
+
+def _write_feature_rank(rows: list[dict], out_csv: Path) -> None:
+    if not rows:
+        print("[WARN] feature_rank: nothing to write (likely too-small test folds or AUC undefined).")
+        return
+
+    df = pd.DataFrame(rows)
+
+    # per-repeat detail
+    df.to_csv(out_csv.with_name("feature_rank_per_repeat.csv"), index=False)
+
+    # aggregate
+    agg = (
+        df.groupby("feature", as_index=False)
+          .agg(
+              importance_mean=("importance_mean", "mean"),
+              importance_std=("importance_mean", "std"),
+              n=("importance_mean", "count"),
+          )
+          .sort_values("importance_mean", ascending=False)
+    )
+    agg.to_csv(out_csv, index=False)
+    print(f"[OK] feature_rank.csv -> {out_csv}")
 
 
 def _score_to_proba(clf, X: np.ndarray) -> np.ndarray:
@@ -466,6 +491,8 @@ def main():
     ap.add_argument("--gridsearch", action="store_true", help="Enable GridSearchCV for best model on each repeat.")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--config", type=str, default=None, help="Path to .toml (loads [ml] defaults). CLI overrides config.")
+    ap.add_argument("--perm-repeats", type=int, default=10)
+
     args = ap.parse_args()
     
     # ---- Optional config defaults (CLI overrides config) ----
@@ -539,7 +566,14 @@ def main():
 
     # label
     if args.label_col not in df.columns:
-        raise ValueError(f"Label column '{args.label_col}' not found in dataset. Columns: {list(df.columns)[:20]}...")
+        label_like = [c for c in df.columns if c.lower() in ("label", "target", "y") or c.lower().startswith("label")]
+        if len(label_like) == 1:
+            print(f"[WARN] label_col '{args.label_col}' not found; using '{label_like[0]}'")
+            args.label_col = label_like[0]
+        else:
+            raise ValueError(f"Label column '{args.label_col}' not found in dataset. Columns: {list(df.columns)[:20]}...")
+
+
     df = df.dropna(subset=[args.label_col]).copy()
     df[args.label_col] = df[args.label_col].astype(int)
 
@@ -577,6 +611,7 @@ def main():
     rows_repeat_best = []
     rows_repeat_all = []
     best_overall = None  # (repeat_auc, repeat_idx, model_name, model_obj, transform_record)
+    selected_feature_lists: list[list[str]] = []  # for feature_rank.csv
 
     rng = np.random.RandomState(args.seed)
 
@@ -593,6 +628,7 @@ def main():
         )
 
     print(f"[INFO] Features selected: {len(feat_cols)} | rfecv={do_rfecv} | gridsearch={args.gridsearch}")
+    feat_rank_rows = []
 
     for rep in range(args.n_repeats):
         rep_seed = int(rng.randint(0, 10_000_000))
@@ -618,6 +654,7 @@ def main():
             corr_thresh=0.95,
         )
         x_test_sel = _apply_transform_record(x_test, trec)
+        selected_feature_lists.append(list(trec.rfe_feature_names))
 
         # screen models on train (CV AUC)
         # (group-awareness inside CV only matters when multiple rows per patient are present)
@@ -669,6 +706,31 @@ def main():
         y_pred = (y_score >= 0.5).astype(int)
 
         test_auc = _safe_auc(y_test.to_numpy(), y_score)
+        # ---- Feature ranking (A): permutation importance on test set ----
+        try:
+            # feature names after selection
+            feat_names = trec.rfe_feature_names or trec.final_columns_after_var_corr or trec.pre_keep_cols
+            perm = permutation_importance(
+                final_clf,
+                x_test_sel,
+                y_test,
+                scoring="roc_auc",
+                n_repeats=int(args.perm_repeats),
+                random_state=rep_seed,
+            )
+            for fn, im, istd in zip(feat_names, perm.importances_mean, perm.importances_std):
+                feat_rank_rows.append({
+                    "repeat": rep + 1,
+                    "best_model": best_name,
+                    "test_auc": float(test_auc) if test_auc is not None else np.nan,
+                    "feature": fn,
+                    "importance_mean": float(im),
+                    "importance_std": float(istd),
+                })
+        except Exception as e:
+            # meestal: test fold heeft maar 1 class -> roc_auc kan niet
+            pass
+
         test_acc = float(accuracy_score(y_test, y_pred))
         test_bacc = float(balanced_accuracy_score(y_test, y_pred))
         test_f1 = float(f1_score(y_test, y_pred, zero_division=0))
@@ -715,6 +777,22 @@ def main():
     df_all.to_csv(out_dir / "train_cv_screening_all_models.csv", index=False)
     df_best.to_csv(out_dir / "repeat_best_model_metrics.csv", index=False)
     summary.to_csv(out_dir / "summary_by_best_model.csv", index=False)
+    # ---- Feature ranking (A: selection frequency across repeats) ----
+    if selected_feature_lists:
+        ctr = Counter()
+        for feats in selected_feature_lists:
+            ctr.update(feats)
+
+        df_rank = pd.DataFrame({
+            "feature": list(ctr.keys()),
+            "count": [ctr[f] for f in ctr.keys()],
+        })
+        df_rank["fraction"] = df_rank["count"] / float(len(selected_feature_lists))
+        df_rank["family"] = df_rank["feature"].str.split("_").str[0]
+
+        df_rank = df_rank.sort_values(["fraction", "count", "feature"], ascending=[False, False, True]).reset_index(drop=True)
+        df_rank.to_csv(out_dir / "feature_rank.csv", index=False)
+        print(f"[OK] Wrote feature_rank.csv -> {out_dir / 'feature_rank.csv'}")
 
     # dump best overall details
     if best_overall is not None:
@@ -737,7 +815,7 @@ def main():
             joblib.dump({"model": best_clf, "transform": best_trec, "feature_cols": feat_cols}, out_dir / "best_model_bundle.joblib")
         except Exception:
             pass
-
+    _write_feature_rank(feat_rank_rows, out_dir / "feature_rank.csv")
     print("\n[OK] Results written to:")
     print(f"  {out_dir}")
     print("[INFO] Top of summary_by_best_model.csv:")

@@ -154,30 +154,28 @@ def main():
             skipped.append((cnt_path.name, "plv", str(e)))
             continue
         # ---- SPECPARAM ----
+        out_spec = run_dir / "features" / "specparam"
+        fig_spec = run_dir / "figures" / "specparam"
+        out_spec.mkdir(parents=True, exist_ok=True)
+        fig_spec.mkdir(parents=True, exist_ok=True)
+
         sp_cfg = cfg.get("specparam", {})
         use_specparam = bool(sp_cfg.get("enabled", cfg.get("pipeline", {}).get("use_specparam", False)))
 
         if use_specparam:
-            try:
-                sp = SpecParamBlocks(
-                    out_dir=out_spec,
-                    cfg=sp_cfg,  # <-- deze regel is belangrijk
-                    fmin=float(sp_cfg.get("fmin", 2.0)),
-                    fmax=float(sp_cfg.get("fmax", 45.0)),
-                    upper_lim_psd=int(sp_cfg.get("upper_lim_psd", 70)),
-                    trim=float(sp_cfg.get("trim", 0.0)),
-                    padding=str(sp_cfg.get("padding", "zeros")),
-                    presets=list(sp_cfg.get("enabled_presets", [sp_cfg.get("preset", "baseline")]))
-                )
-
-
-                df_sp = sp.run_from_raw(raw, base_name=base)
-                df_sp.to_csv(out_spec / f"{base}_specparam_summary_ALL.csv", index=False)
-                print(f"[OK] SpecParam saved -> {out_spec}")
-            except Exception as e:
-                print(f"[SKIP] SpecParam failed for {cnt_path.name}: {e}")
-                skipped.append((cnt_path.name, "specparam", str(e)))
-
+            sp = SpecParamBlocks(
+                out_dir=out_spec,
+                fig_dir=fig_spec,
+                cfg=sp_cfg,
+                fmin=float(sp_cfg.get("fmin", 2.0)),
+                fmax=float(sp_cfg.get("fmax", 45.0)),
+                upper_lim_psd=int(sp_cfg.get("upper_lim_psd", 70)),
+                trim=float(sp_cfg.get("trim", 0.0)),
+                padding=str(sp_cfg.get("padding", "zeros")),
+                presets=list(sp_cfg.get("enabled_presets", [sp_cfg.get("preset", "baseline")])),
+            )
+            df_sp = sp.run_from_raw(raw, base_name=base)
+            df_sp.to_csv(out_spec / f"{base}_specparam_summary.csv", index=False)
 
             
     # ---- Summary ----

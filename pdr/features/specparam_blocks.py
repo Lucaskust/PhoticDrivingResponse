@@ -12,6 +12,8 @@ from specparam import SpectralModel
 
 from pdr.core.config import resolve_specparam_config
 from pdr.features.power import Power
+from typing import Optional
+from pathlib import Path
 
 
 # Python-side defaults (kan later via TOML overschreven worden met preset_overrides)
@@ -117,24 +119,37 @@ def _safe_get_peaks(fm) -> np.ndarray:
     return peaks
 
 
-@dataclass
 class SpecParamBlocks:
-    out_dir: Path
-    cfg: dict = field(default_factory=dict)
-    fmin: float = 2.0
-    fmax: float = 45.0
-    upper_lim_psd: int = 70
-    trim: float = 0.0
-    padding: str = "zeros"
-    presets: Optional[list[str]] = None
+    def __init__(
+        self,
+        out_dir: Path,
+        cfg: dict | None = None,
+        fig_dir: Path | None = None,
+        fmin: float = 2.0,
+        fmax: float = 45.0,
+        upper_lim_psd: int = 70,
+        trim: float = 0.0,
+        padding: str = "zeros",
+        presets: list[str] | None = None,
+    ):
+        self.out_dir = _ensure_dir(Path(out_dir))
+        self.fig_dir = _ensure_dir(Path(fig_dir)) if fig_dir is not None else None
+        self.cfg = cfg or {}
+
+        self.fmin = float(fmin)
+        self.fmax = float(fmax)
+        self.upper_lim_psd = int(upper_lim_psd)
+        self.trim = float(trim)
+        self.padding = str(padding)
+        self.presets = presets  # als None: resolve_specparam_config bepaalt wat er gebeurt
 
     def run_from_raw(self, raw, base_name: str) -> pd.DataFrame:
-        self.out_dir = Path(self.out_dir)
-        self.out_dir.mkdir(parents=True, exist_ok=True)
-
-        # ---- PSD per blok (avg reps) via Power internals ----
-        df_stim = Power._stimulation_power(raw, save=False)
-        epochs, df_epochs = Power._epoch_power(df_stim, raw, save=False, plot=False)
+        """
+        PSD per stimulus-freq (rep-mean), SpecParam fit per preset, + figuren opslaan.
+        """
+        # 1) PSD via Power internals
+        df_stim = Power._stimulation_power(raw, save=False, out_dir=None)
+        epochs, df_epochs = Power._epoch_power(df_stim, raw, save=False, plot=False, out_dir=None)
         _, fft_lin, fft_freq = Power._fft_power(
             epochs,
             df_epochs,
@@ -146,61 +161,75 @@ class SpecParamBlocks:
 
         ch_names = epochs.info["ch_names"]
         freqs_present = sorted(df_epochs["freq"].dropna().astype(int).unique())
-        freqs_present = [f for f in freqs_present if f > 0]
 
+        preset_names = self.presets
+        if preset_names is None:
+            # als cfg presets bevat: pak die keys, anders alleen 'baseline'
+            preset_names = list((self.cfg.get("presets", {}) or {}).keys()) or [self.cfg.get("preset", "baseline")]
 
-        # Welke presets runnen?
-        preset_names = self.presets or list(SPEC_PRESETS.keys())
-
-        rows = []
+        summary_rows: list[dict] = []
 
         for preset in preset_names:
-            preset_dir = self.out_dir / preset
-            preset_dir.mkdir(parents=True, exist_ok=True)
+            fallback_presets = (self.cfg.get("presets") or {})
+            fmin_fit, fmax_fit, model_params = resolve_specparam_config(self.cfg, preset=preset, fallback_presets=fallback_presets)
+            fallback_presets = self.cfg.get("presets") or {
+                "baseline": dict(aperiodic_mode="fixed", peak_width_limits=(2, 12), max_n_peaks=6, min_peak_height=0.05, peak_threshold=2.0),
+                "conservative": dict(aperiodic_mode="fixed", peak_width_limits=(2, 10), max_n_peaks=4, min_peak_height=0.10, peak_threshold=2.5),
+                "harmonics": dict(aperiodic_mode="fixed", peak_width_limits=(2, 8),  max_n_peaks=10, min_peak_height=0.05, peak_threshold=1.5),
+            }
+            fmin_fit, fmax_fit, model_params = resolve_specparam_config(self.cfg, preset, fallback_presets)
 
-            # pak params uit config (jouw TOML) + fallback SPEC_PRESETS
-            fit_fmin, fit_fmax, model_params = resolve_specparam_config(self.cfg, preset=preset, fallback_presets=SPEC_PRESETS)
 
-            # clip aan fft range
-            fit_fmin = max(float(fit_fmin), float(np.min(fft_freq)))
-            fit_fmax = min(float(fit_fmax), float(np.max(fft_freq)))
-            if fit_fmax <= fit_fmin:
-                raise ValueError(f"SpecParam freq_range invalid after clipping: ({fit_fmin}, {fit_fmax})")
 
             for f in freqs_present:
-                # mean over channels (rep=0 = mean over reps)
-                stack = np.stack([fft_lin[0][f][ch] for ch in ch_names], axis=0)
-                mean_lin = np.nanmean(stack, axis=0)
+                # rep=0 = mean over reps (legacy)
+                try:
+                    stack = np.stack([fft_lin[0][f][ch] for ch in ch_names], axis=0)
+                    mean_lin = np.nanmean(stack, axis=0)
+                except Exception:
+                    continue
+
                 mean_lin = np.asarray(mean_lin, dtype=float)
                 mean_lin = np.maximum(mean_lin, 1e-30)
 
                 fm = SpectralModel(**model_params)
-                fm.fit(fft_freq, mean_lin, freq_range=(fit_fmin, fit_fmax))
+                fm.fit(fft_freq, mean_lin, freq_range=(fmin_fit, fmax_fit))
 
                 r2, err = _safe_get_r2_err(fm)
                 offset, knee, exponent = _safe_get_aperiodic(fm)
 
-                # plot
+                # ---- FIG SAVE (hard) ----
+                save_root = self.fig_dir if self.fig_dir is not None else self.out_dir
+                save_dir = save_root / preset
+                save_dir.mkdir(parents=True, exist_ok=True)
+
                 fig, ax = plt.subplots(figsize=(8, 4))
                 fm.plot(ax=ax, plot_peaks="shade")
                 ax.set_title(f"{base_name} | f={f} | preset={preset}")
-                fig.savefig(preset_dir / f"{base_name}_f{f}_specparam.png", dpi=200, bbox_inches="tight")
+                fig_path = save_dir / f"{base_name}_f{f}_specparam.png"
+                fig.savefig(fig_path, dpi=200, bbox_inches="tight")
                 plt.close(fig)
 
-                # peaks
+                # debug print (laat staan tot je het ziet)
+                print(f"[OK] SpecParam figure -> {fig_path}")
+
+                # ---- tables ----
+                preset_out = (self.out_dir / preset)
+                preset_out.mkdir(parents=True, exist_ok=True)
+
                 peaks = _safe_get_peaks(fm)
                 df_peaks = pd.DataFrame(peaks, columns=["center_freq", "peak_power", "bandwidth"])
                 df_peaks.insert(0, "file", base_name)
                 df_peaks.insert(1, "freq_hz", f)
                 df_peaks.insert(2, "preset", preset)
-                df_peaks.to_csv(preset_dir / f"{base_name}_f{f}_peaks.csv", index=False)
+                df_peaks.to_csv(preset_out / f"{base_name}_f{f}_peaks.csv", index=False)
 
                 row = {
                     "file": base_name,
                     "freq_hz": f,
                     "preset": preset,
-                    "fmin_fit": fit_fmin,
-                    "fmax_fit": fit_fmax,
+                    "fmin_fit": fmin_fit,
+                    "fmax_fit": fmax_fit,
                     "r2": r2,
                     "error": err,
                     "offset": offset,
@@ -209,8 +238,8 @@ class SpecParamBlocks:
                     "n_channels": len(ch_names),
                     "channels": ",".join(ch_names),
                 }
-                rows.append(row)
+                summary_rows.append(row)
 
-        df_summary = pd.DataFrame(rows)
+        df_summary = pd.DataFrame(summary_rows)
         df_summary.to_csv(self.out_dir / f"{base_name}_specparam_summary.csv", index=False)
         return df_summary

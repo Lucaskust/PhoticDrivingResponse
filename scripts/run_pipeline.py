@@ -81,10 +81,18 @@ def main():
     if args_cli.max_files and args_cli.max_files > 0:
         files = files[: args_cli.max_files]
 
-    # ---- Parameters ----
     pre = cfg.get("preprocess", {})
-    passband = [float(pre.get("passband_low", 0.5)), float(pre.get("passband_high", 100.0))]
-    use_occipital = bool(pre.get("use_occipital", True))
+
+    pb = pre.get("passband", None)
+    if isinstance(pb, (list, tuple)) and len(pb) == 2:
+        passband = [float(pb[0]), float(pb[1])]
+    else:
+        passband = [float(pre.get("passband_low", 0.5)),
+                    float(pre.get("passband_high", 100.0))]
+
+    use_occipital = bool(pre.get("use_occipital", pre.get("use_occipital_only", True)))
+    notch_hz = float(pre.get("notch_hz", 50.0))
+
 
 
     out_power = run_dir / "features" / "power"
@@ -101,7 +109,7 @@ def main():
         print(f"\n--- [{i}/{len(files)}] Processing: {cnt_path.name}")
 
         try:
-            raw = eeg(cnt_path, passband, occi=use_occipital, plot=False)
+            raw = eeg(cnt_path, passband, notch=notch_hz, occi=use_occipital, plot=False)
         except Exception as e:
             print(f"[SKIP] eeg() failed for {cnt_path.name}: {e}")
             skipped.append((cnt_path.name, "eeg", str(e)))

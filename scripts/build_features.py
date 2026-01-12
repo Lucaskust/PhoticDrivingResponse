@@ -91,9 +91,22 @@ def _plv_features_for_freq(df_plv_stim: pd.DataFrame, df_plv_base: pd.DataFrame,
     out: dict = {}
 
     def _prep(df: pd.DataFrame) -> tuple[pd.DataFrame, str | None, str | None, str | None]:
+        if df is None or df.empty:
+            return df, None, None, None
+        df = df.copy()
         cF = _col(df, ["Frequency", "freq", "stim_freq"])
         cH = _col(df, ["Harmonic", "harmonic", "harm_freq"])
-        cV = _col(df, ["PLV", "plv", "value"])
+
+        # Phase.py schrijft 'mean_plv' en/of kanaal-kolommen '*_plv' (bv O1_plv)
+        if "mean_plv" in df.columns:
+            df["plv_value"] = pd.to_numeric(df["mean_plv"], errors="coerce")
+        else:
+            occi_cols = [c for c in ["O1_plv", "O2_plv", "Oz_plv"] if c in df.columns]
+            plv_cols = [c for c in df.columns if c.endswith("_plv")]
+            use_cols = occi_cols if occi_cols else plv_cols
+            df["plv_value"] = df[use_cols].mean(axis=1) if use_cols else np.nan
+
+        cV = "plv_value"
         return df, cF, cH, cV
 
     dfS, cFS, cHS, cVS = _prep(df_plv_stim)

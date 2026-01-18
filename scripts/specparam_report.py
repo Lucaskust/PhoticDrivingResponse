@@ -47,17 +47,12 @@ def _infer_spec_summary_files(run_dir: Path) -> list[Path]:
 def _load_long_specparam(run_dir: Path) -> pd.DataFrame:
     files = _infer_spec_summary_files(run_dir)
     if not files:
-        raise FileNotFoundError(f"No specparam summary CSVs found in {run_dir/'features/specparam'}")
+        raise FileNotFoundError(f"No specparam summary CSVs found under {run_dir/'features/specparam'}")
 
     dfs = []
     for p in files:
         try:
             df = pd.read_csv(p)
-            # ensure expected cols
-            for c in ["file", "freq_hz", "preset", "r2", "error", "offset", "exponent"]:
-                if c not in df.columns:
-                    # some older versions may differ; skip
-                    pass
             dfs.append(df)
         except Exception:
             continue
@@ -70,6 +65,8 @@ def _load_long_specparam(run_dir: Path) -> pd.DataFrame:
     # normalize types
     if "freq_hz" in out.columns:
         out["freq_hz"] = pd.to_numeric(out["freq_hz"], errors="coerce")
+        out = out[out["freq_hz"].fillna(-1) > 0]  # <-- drop 0 Hz + NaNs
+
     for c in ["r2", "error", "offset", "knee", "exponent", "fmin_fit", "fmax_fit"]:
         if c in out.columns:
             out[c] = pd.to_numeric(out[c], errors="coerce")

@@ -70,7 +70,9 @@ fmax = 45.0
 aperiodic_mode = "fixed"
 
 # Kies één preset hieronder. Jij kunt later extra presets toevoegen.
+enabled = true
 preset = "baseline"  # "baseline" | "conservative" | "harmonics"
+enabled_presets = ["baseline", "conservative", "harmonics"]
 
 # Overrides: alles wat je hier zet overschrijft de preset.
 # Handig om snel te testen zonder de preset-tabel te wijzigen.
@@ -117,7 +119,7 @@ label_col = "label"
 group_col = "patient_id"
 file_col  = "file"
 dataset_kind = "wide"         # "wide" of "long"
-timepoint   = "t2"          # "t0" | "t1" | "t2" | "all"
+timepoint   = "all"          # "t0" | "t1" | "t2" | "all"
 feature_set = "all"         # "all" | "power" | "plv" | "specparam"
 
 n_repeats = 20
